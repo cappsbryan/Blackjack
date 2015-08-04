@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">Blackjack</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="play_button">Play</string>
+    <string name="title_activity_game">GameActivity</string>
+    <string name="dealer_text">Dealer\'s hand:</string>
+    <string name="dealer_first_card_hint">The dealer\'s first card</string>
+    <string name="dealer_second_card_hint">The dealer\'s second card</string>
+    <string name="player_text">Your hand:</string>
+    <string name="player_first_card_hint">Your first card</string>
+    <string name="player_second_card_hint">Your second card</string>
+    <string name="your_money">Your money: $1000</string>
+    <string name="your_bet">Your bet:</string>
+    <string name="decrement_bet">- $100</string>
+    <string name="one_hundred_dollars">$100</string>
+    <string name="increment_bet">+ $100</string>
+    <string name="bet">Bet</string>
+    <string name="stay">Stay</string>
+    <string name="your_bet_label">Your bet:</string>
+    <string name="hit">Hit</string>
+    <string name="play_again">Play Again</string>
+    <string name="player_busts">Too many! You lost.</string>
+    <string name="player_wins">You won!</string>
+    <string name="player_blackjack">Blackjack! You won!</string>
+    <string name="dealer_blackjack">You lost.</string>
+    <string name="dealer_busts">Dealer busts! You win!</string>
+    <string name="dealer_wins">You lost.</string>
+    <string name="push">It\'s a push.</string>
+    <string name="player_money">Your money: $</string>
+</resources>
