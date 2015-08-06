@@ -1,7 +1,6 @@
 package com.bryancapps.blackjack;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Representation of a hand of playing cards
@@ -9,29 +8,42 @@ import java.util.List;
  * Created by bryancapps on 6/19/15.
  */
 public class CardHand {
-    // constructor
-
-    // add method
-
-    // score method
-
-    // read/display cards
 
     private ArrayList<Integer> cardsInHand;
+    private CardDeck deck;
 
-    public CardHand() {
+    public CardHand(CardDeck deck) {
         cardsInHand = new ArrayList<>();
+        this.deck = deck;
     }
 
-    public void addCard(int card) {
+    public void add(int card) {
         cardsInHand.add(card);
     }
 
-    public int getScore() {
+    public int size() {
+        return cardsInHand.size();
+    }
+
+    public int draw() {
+        int card = deck.deal();
+        add(card);
+        return card;
+    }
+
+    public int getScore(boolean countFirstCard) {
         int score = 0;
         boolean hasAce = false;
 
-        for (int card : cardsInHand) {
+        int startingIndex;
+        if (countFirstCard) {
+            startingIndex = 0;
+        } else {
+            startingIndex = 1;
+        }
+
+        for (int i = startingIndex; i < cardsInHand.size(); i++) {
+            int card = cardsInHand.get(i);
 
             if (card >= 0 && card < 4) {
                 // card is an ace and should be counted as 11 or 1
@@ -52,7 +64,11 @@ public class CardHand {
         return score;
     }
 
-    public ArrayList<Integer> getCardsInHand() {
-        return cardsInHand;
+    public int get(int index) {
+        return cardsInHand.get(index);
+    }
+
+    public void clear() {
+        cardsInHand.clear();
     }
 }

@@ -20,13 +20,17 @@
     <string name="stay">Stay</string>
     <string name="your_bet_label">Your bet:</string>
     <string name="hit">Hit</string>
+    <string name="doubleBet">Double</string>
+    <string name="split">Split</string>
     <string name="play_again">Play Again</string>
-    <string name="player_busts">Too many! You lost.</string>
-    <string name="player_wins">You won!</string>
-    <string name="player_blackjack">Blackjack! You won!</string>
-    <string name="dealer_blackjack">You lost.</string>
-    <string name="dealer_busts">Dealer busts! You win!</string>
-    <string name="dealer_wins">You lost.</string>
+    <string name="player_busts">Too many! You lost $</string>
+    <string name="player_wins">You won $</string>
+    <string name="player_blackjack">Blackjack! You won $</string>
+    <string name="dealer_blackjack">You lost $</string>
+    <string name="dealer_busts">Dealer busts! You won $</string>
+    <string name="dealer_wins">You lost $</string>
     <string name="push">It\'s a push.</string>
     <string name="player_money">Your money: $</string>
+    <string name="dealer_initial_score">0</string>
+    <string name="player_initial_score">0</string>
 </resources>
