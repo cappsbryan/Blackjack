@@ -29,10 +29,10 @@ public class CardDeck {
      * Returns a random card from the deck and removes that card from the deck
      * @return An int representing a playing card
      */
-    public int deal() {
+    public Card deal() {
         Random random = new Random();
         int index = random.nextInt(cards.size());
-        return cards.remove(index);
+        return new Card(cards.remove(index));
     }
 
     public void reset() {

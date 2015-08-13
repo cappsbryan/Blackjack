@@ -17,7 +17,6 @@ import android.widget.TextView;
 
 
 public class GameActivity extends Activity {
-    final private int[] CARD_IDS = {R.drawable.card1, R.drawable.card2, R.drawable.card3, R.drawable.card4, R.drawable.card5, R.drawable.card6, R.drawable.card7, R.drawable.card8, R.drawable.card9, R.drawable.card10, R.drawable.card11, R.drawable.card12, R.drawable.card13, R.drawable.card14, R.drawable.card15, R.drawable.card16, R.drawable.card17, R.drawable.card18, R.drawable.card19, R.drawable.card20, R.drawable.card21, R.drawable.card22, R.drawable.card23, R.drawable.card24, R.drawable.card25, R.drawable.card26, R.drawable.card27, R.drawable.card28, R.drawable.card29, R.drawable.card30, R.drawable.card31, R.drawable.card32, R.drawable.card33, R.drawable.card34, R.drawable.card35, R.drawable.card36, R.drawable.card37, R.drawable.card38, R.drawable.card39, R.drawable.card40, R.drawable.card41, R.drawable.card42, R.drawable.card43, R.drawable.card44, R.drawable.card45, R.drawable.card46, R.drawable.card47, R.drawable.card48, R.drawable.card49, R.drawable.card50, R.drawable.card51, R.drawable.card52};
     TextView moneyTextView;
     TextView betTextView;
     TextView betTextView2;
@@ -143,14 +142,14 @@ public class GameActivity extends Activity {
         playerHand.draw();
         dealerHand.draw();
 
-        playerFirstCardView.setImageResource(CARD_IDS[playerHand.get(0)]);
-        playerSecondCardView.setImageResource(CARD_IDS[playerHand.get(1)]);
-        dealerSecondCardView.setImageResource(CARD_IDS[dealerHand.get(1)]);
+        playerFirstCardView.setImageResource(playerHand.get(0).drawableId());
+        playerSecondCardView.setImageResource(playerHand.get(1).drawableId());
+        dealerSecondCardView.setImageResource(dealerHand.get(1).drawableId());
 
         updateScoreViews(false);
 
         // enable split option if the cards are the same value
-        if ((playerHand.get(0) / 4 == playerHand.get(1) / 4) || (playerHand.get(0) >= 4 && playerHand.get(0) < 20 && playerHand.get(1) >= 4 && playerHand.get(1) < 20)) {
+        if (playerHand.get(0).value() == playerHand.get(1).value() && playerHand.size() == 2) {
             splitButton.setEnabled(true);
         }
 
@@ -166,12 +165,12 @@ public class GameActivity extends Activity {
     }
 
     public void onStay(View view) {
-        dealerFirstCardView.setImageResource(CARD_IDS[dealerHand.get(0)]);
+        dealerFirstCardView.setImageResource(dealerHand.get(0).drawableId());
 
         // hit dealer
         // dealer stays on all 17s
         while (dealerHand.getScore(true) < 17) {
-            int hitCard = dealerHand.draw();
+            Card hitCard = dealerHand.draw();
             addCardToView(dealerHandView, hitCard);
         }
 
@@ -179,7 +178,7 @@ public class GameActivity extends Activity {
     }
 
     public void onHit(View view) {
-        int hitCard = playerHand.draw();
+        Card hitCard = playerHand.draw();
         addCardToView(playerHandView, hitCard);
 
         doubleButton.setEnabled(false);
@@ -189,9 +188,9 @@ public class GameActivity extends Activity {
         }
     }
 
-    private void addCardToView(LinearLayout handView, int card) {
+    private void addCardToView(LinearLayout handView, Card card) {
         ImageView cardView = new ImageView(this);
-        cardView.setImageResource(CARD_IDS[card]);
+        cardView.setImageResource(card.drawableId());
         ViewGroup.LayoutParams originalParams = dealerFirstCardView.getLayoutParams();
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(originalParams);
         DisplayMetrics metrics = new DisplayMetrics();
@@ -206,12 +205,21 @@ public class GameActivity extends Activity {
     public void onDouble(View view) {
         currentMoney -= currentBet;
         currentBet = currentBet * 2;
-        int hitCard = playerHand.draw();
+        Card hitCard = playerHand.draw();
         addCardToView(playerHandView, hitCard);
         endHand();
     }
 
     public void onSplit(View view) {
+        /*
+        bet * 2
+        your bet -> total bet
+        store second card
+        replace second card with dealt card
+        recalc score
+        switchToSecondHand instead of endHand
+        endSplitHand
+         */
     }
 
     public void playAgain(View view) {
@@ -246,7 +254,7 @@ public class GameActivity extends Activity {
         int playerScore = playerHand.getScore(true);
         int dealerScore = dealerHand.getScore(true);
         updateScoreViews(true);
-        dealerFirstCardView.setImageResource(CARD_IDS[dealerHand.get(0)]);
+        dealerFirstCardView.setImageResource(dealerHand.get(0).drawableId());
         Resources resources = getResources();
 
         if (playerScore > dealerScore && playerScore <= 21) {

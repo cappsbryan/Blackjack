@@ -9,7 +9,7 @@ import java.util.ArrayList;
  */
 public class CardHand {
 
-    private ArrayList<Integer> cardsInHand;
+    private ArrayList<Card> cardsInHand;
     private CardDeck deck;
 
     public CardHand(CardDeck deck) {
@@ -17,7 +17,11 @@ public class CardHand {
         this.deck = deck;
     }
 
-    public void add(int card) {
+    public void add(int cardId) {
+        cardsInHand.add(new Card(cardId));
+    }
+
+    public void add(Card card) {
         cardsInHand.add(card);
     }
 
@@ -25,8 +29,8 @@ public class CardHand {
         return cardsInHand.size();
     }
 
-    public int draw() {
-        int card = deck.deal();
+    public Card draw() {
+        Card card = deck.deal();
         add(card);
         return card;
     }
@@ -43,18 +47,11 @@ public class CardHand {
         }
 
         for (int i = startingIndex; i < cardsInHand.size(); i++) {
-            int card = cardsInHand.get(i);
-
-            if (card >= 0 && card < 4) {
-                // card is an ace and should be counted as 11 or 1
+            Card card = cardsInHand.get(i);
+            if (card.value() == 1) {
                 hasAce = true;
-                score += 1;
-            } else if (card >= 4 && card < 20) {
-                // card is a king, queen, jack, or ten and should be counted as 10
-                score += 10;
-            } else {
-                score += (((51 - card) / 4) + 2);
             }
+            score += card.value();
         }
 
         if (hasAce && score <= 11) {
@@ -64,7 +61,7 @@ public class CardHand {
         return score;
     }
 
-    public int get(int index) {
+    public Card get(int index) {
         return cardsInHand.get(index);
     }
 
