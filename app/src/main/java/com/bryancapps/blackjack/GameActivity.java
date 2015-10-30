@@ -231,8 +231,8 @@ public class GameActivity extends Activity {
         currentBet = 100;
         currentMoney -= 100;
         betTextView.setText("$" + currentBet);
-        dealerScoreTextView.setText("" + 0);
-        playerScoreTextView.setText("" + 0);
+        dealerScoreTextView.setText(String.valueOf(0));
+        playerScoreTextView.setText(String.valueOf(0));
         playerHand.clear();
         dealerHand.clear();
         int dealerCardCount = dealerHandView.getChildCount();
