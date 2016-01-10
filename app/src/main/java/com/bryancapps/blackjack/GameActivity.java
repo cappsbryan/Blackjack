@@ -31,6 +31,9 @@ public class GameActivity extends Activity {
     View betDecisionView;
     View hitAndStayView;
     View playAgainView;
+    Button betButton;
+    Button incrementBetButton;
+    Button decrementBetButton;
     Button doubleButton;
     Button splitButton;
     ImageView dealerFirstCardView;
@@ -51,11 +54,14 @@ public class GameActivity extends Activity {
         playerScoreTextView = (TextView) findViewById(R.id.playerScoreTextView);
         dealerScoreTextView = (TextView) findViewById(R.id.dealerScoreTextView);
         handOverTextView = (TextView) findViewById(R.id.handOverTextView);
-        currentBet = 100;
+        currentBet = 0;
         deck = new CardDeck();
         dealerHand = new CardHand(deck);
         playerHand = new CardHand(deck);
-        betTextView.setText("$" + currentBet);
+        betButton = (Button) findViewById(R.id.betButton);
+        incrementBetButton = (Button) findViewById(R.id.incrementBetButton);
+        decrementBetButton = (Button) findViewById(R.id.decrementBetButton);
+        betTextView.setText(String.format("$%d", currentBet));
         betDecisionView = findViewById(R.id.betDecisionView);
         hitAndStayView = findViewById(R.id.hittingAndStayingView);
         playAgainView = findViewById(R.id.playAgainView);
@@ -67,7 +73,7 @@ public class GameActivity extends Activity {
         playerHandView = (LinearLayout) findViewById(R.id.playerHand);
         playerFirstCardView = (ImageView) findViewById(R.id.playerFirstCardView);
         playerSecondCardView = (ImageView) findViewById(R.id.playerSecondCardView);
-        playerMoneyLabel = getResources().getString(R.string.player_money);
+        playerMoneyLabel = getResources().getString(R.string.your_money_label);
     }
 
     @Override
@@ -77,7 +83,14 @@ public class GameActivity extends Activity {
         SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
         int defaultValue = getResources().getInteger(R.integer.saved_money_default);
         currentMoney = sharedPref.getInt("money", defaultValue);
-        moneyTextView.setText(playerMoneyLabel + (currentMoney + 100));
+        moneyTextView.setText(playerMoneyLabel + currentMoney);
+        if (currentBet > 0) {
+            betButton.setEnabled(true);
+            decrementBetButton.setEnabled(true);
+        } else {
+            betButton.setEnabled(false);
+            decrementBetButton.setEnabled(false);
+        }
     }
 
     @Override
@@ -112,20 +125,12 @@ public class GameActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void decreaseBet(View view) {
-        if (currentBet >= 100) {
-            currentBet -= 100;
-            currentMoney += 100;
-            betTextView.setText("$" + currentBet);
-        }
+    public void decrementBet(View view) {
+        changeBet(-100);
     }
 
-    public void increaseBet(View view) {
-        if (currentMoney >= 100) {
-            currentBet += 100;
-            currentMoney -= 100;
-            betTextView.setText("$" + currentBet);
-        }
+    public void incrementBet(View view) {
+        changeBet(100);
     }
 
     public void onBet(View view) {
@@ -133,9 +138,8 @@ public class GameActivity extends Activity {
         // switch to view for player hitting and staying
         betDecisionView.setVisibility(View.GONE);
         hitAndStayView.setVisibility(View.VISIBLE);
-        TextView betView = (TextView) findViewById(R.id.betTextView2);
-        betView.setText("$" + currentBet);
-        moneyTextView.setText("");
+        TextView bigBetView = (TextView) findViewById(R.id.betTextView2);
+        bigBetView.setText(String.format("$%d", currentBet));
 
         dealerHand.draw();
         playerHand.draw();
@@ -160,21 +164,22 @@ public class GameActivity extends Activity {
     }
 
     private void updateScoreViews(boolean showDealerFirstCard) {
-        playerScoreTextView.setText("" + playerHand.getScore(true));
-        dealerScoreTextView.setText("" + dealerHand.getScore(showDealerFirstCard));
+        playerScoreTextView.setText(String.format("%d", playerHand.getScore(true)));
+        dealerScoreTextView.setText(String.format("%d", dealerHand.getScore(showDealerFirstCard)));
     }
 
     public void onStay(View view) {
         dealerFirstCardView.setImageResource(dealerHand.get(0).drawableId());
+        hitDealer();
+        endHand();
+    }
 
-        // hit dealer
+    private void hitDealer() {
         // dealer stays on all 17s
         while (dealerHand.getScore(true) < 17) {
             Card hitCard = dealerHand.draw();
             addCardToView(dealerHandView, hitCard);
         }
-
-        endHand();
     }
 
     public void onHit(View view) {
@@ -186,6 +191,32 @@ public class GameActivity extends Activity {
         if (playerHand.getScore(true) > 21) {
             endHand();
         }
+    }
+
+    /**
+     * Changes the current bet value, the player's money, and the corresponding views
+     *
+     * @param change How much to increase the bet by, negative values represent a decrease
+     * @return The new bet value
+     */
+    private int changeBet(int change) {
+        if (currentBet >= (-1) * change && currentMoney >= change) {
+            currentBet = currentBet + change;
+            currentMoney = currentMoney - change;
+            betTextView.setText(String.format("$%d", currentBet));
+            moneyTextView.setText(String.format("$%d", currentMoney));
+        }
+        if (currentBet > 0) {
+            betButton.setEnabled(true);
+        } else {
+            betButton.setEnabled(false);
+        }
+        if (currentMoney > 0) {
+            incrementBetButton.setEnabled(true);
+        } else {
+            incrementBetButton.setEnabled(false);
+        }
+        return currentBet;
     }
 
     private void addCardToView(LinearLayout handView, Card card) {
@@ -203,10 +234,10 @@ public class GameActivity extends Activity {
     }
 
     public void onDouble(View view) {
-        currentMoney -= currentBet;
-        currentBet = currentBet * 2;
+        changeBet(currentBet);
         Card hitCard = playerHand.draw();
         addCardToView(playerHandView, hitCard);
+        hitDealer();
         endHand();
     }
 
@@ -228,9 +259,8 @@ public class GameActivity extends Activity {
         splitButton.setEnabled(false);
         doubleButton.setEnabled(true);
         deck.reset();
-        currentBet = 100;
-        currentMoney -= 100;
-        betTextView.setText("$" + currentBet);
+        currentBet = 0;
+        changeBet(0);
         dealerScoreTextView.setText(String.valueOf(0));
         playerScoreTextView.setText(String.valueOf(0));
         playerHand.clear();
@@ -261,16 +291,20 @@ public class GameActivity extends Activity {
             // player wins!
             String text = resources.getString(R.string.player_wins) + currentBet + "!";
             handOverTextView.setText(text);
+            showMoneyChange(currentBet * 2);
             currentMoney += (currentBet * 2);
         } else if (playerScore > dealerScore && playerScore == 21 && playerHand.size() == 2) {
             // player has a blackjack!
-            String text = resources.getString(R.string.player_blackjack) + (currentBet * 1.5) + "!";
+            int winnings = (int) (currentBet * 1.5);
+            String text = resources.getString(R.string.player_blackjack) + winnings + "!";
             handOverTextView.setText(text);
+            showMoneyChange(currentBet * 2.5);
             currentMoney += (currentBet * 2.5);
         } else if (playerScore <= 21 && dealerScore > 21) {
             // dealer busts!
             String text = resources.getString(R.string.dealer_busts) + currentBet + "!";
             handOverTextView.setText(text);
+            showMoneyChange(currentBet * 2);
             currentMoney += (currentBet * 2);
         } else if (dealerScore > playerScore && dealerScore <= 21) {
             // dealer wins
@@ -283,6 +317,7 @@ public class GameActivity extends Activity {
         } else if (dealerScore == playerScore && dealerScore <= 21) {
             // push
             handOverTextView.setText(R.string.push);
+            showMoneyChange(currentBet);
             currentMoney += currentBet;
         } else if (playerScore > 21) {
             // player busts
@@ -290,11 +325,17 @@ public class GameActivity extends Activity {
             handOverTextView.setText(text);
         }
 
+        currentBet = 0;
+
         if (currentMoney <= 0) {
             currentMoney = 1000;
         }
         hitAndStayView.setVisibility(View.GONE);
         playAgainView.setVisibility(View.VISIBLE);
+    }
+
+    private void showMoneyChange(double change) {
+        moneyTextView.setText(String.format("%s\n+ %d", moneyTextView.getText(), (int) change));
     }
 
 }
