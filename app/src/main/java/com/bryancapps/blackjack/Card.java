@@ -19,31 +19,29 @@ public class Card {
     }
 
     public String number() {
-        // TODO: update to new card numbers
         if (id >= 0 && id < 4) {
             return "ace";
-        } else if (id >= 4 && id < 8) {
+        } else if (id >= 48) {
             return "king";
-        } else if (id >= 8 && id < 12) {
+        } else if (id >= 44 && id < 48) {
             return "queen";
-        } else if (id >= 12 && id < 16) {
+        } else if (id >= 40 && id < 44) {
             return "jack";
         } else {
-            return String.valueOf((((51 - id) / 4) + 2));
+            return String.valueOf((id / 4) + 1);
         }
     }
 
     public String suit() {
-        // Todo: update to new card numbers
         int remainder = id % 4;
         if (remainder == 0) {
             return "clubs";
         } else if (remainder == 1) {
-            return "spades";
+            return "diamonds";
         } else if (remainder == 2) {
             return "hearts";
         } else {
-            return "diamonds";
+            return "spades";
         }
     }
 

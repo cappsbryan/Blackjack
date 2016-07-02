@@ -1,10 +1,10 @@
 <resources>
     <string name="app_name">Blackjack</string>
 
-    <string name="action_settings">Settings</string>
     <string name="play_button">Play</string>
     <string name="title_activity_game">GameActivity</string>
     <string name="dealer_text">Dealer\'s hand:</string>
+    <string name="card_hint">A playing card</string>
     <string name="dealer_first_card_hint">The dealer\'s first card</string>
     <string name="dealer_second_card_hint">The dealer\'s second card</string>
     <string name="player_text">Your hand:</string>
