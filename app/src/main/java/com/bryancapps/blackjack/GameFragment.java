@@ -1,11 +1,12 @@
 package com.bryancapps.blackjack;
 
 import android.app.Fragment;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.PictureDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,8 +15,16 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bryancapps.blackjack.Models.Card;
+import com.bryancapps.blackjack.Models.GameStatus;
+import com.bryancapps.blackjack.Models.Hand;
+import com.bryancapps.blackjack.Models.Player;
+import com.caverock.androidsvg.SVG;
+import com.caverock.androidsvg.SVGParseException;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.text.NumberFormat;
-import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -25,85 +34,43 @@ import butterknife.Unbinder;
 /**
  * Created by bryancapps on 6/27/16.
  */
-public class GameFragment extends Fragment {
-    private
-    @BindView(R.id.moneyTextView)
-    TextView moneyTextView;
-    private
-    @BindView(R.id.betTextView)
-    TextView betTextView;
-    private
-    @BindView(R.id.playerScoreTextView)
-    TextView playerScoreTextView;
-    private
-    @BindView(R.id.dealerScoreTextView)
-    TextView dealerScoreTextView;
-    private
-    @BindView(R.id.handOverTextView)
-    TextView handOverTextView;
-    private
-    @BindView(R.id.betTextView2)
-    TextView bigBetView;
-    private
-    @BindView(R.id.betButton)
-    Button betButton;
-    private
-    @BindView(R.id.incrementBetButton)
-    Button incrementBetButton;
-    private
-    @BindView(R.id.decrementBetButton)
-    Button decrementBetButton;
-    private
-    @BindView(R.id.doubleButton)
-    Button doubleButton;
-    private
-    @BindView(R.id.splitButton)
-    Button splitButton;
-    private
-    @BindView(R.id.betDecisionView)
-    View betDecisionView;
-    private
-    @BindView(R.id.hittingAndStayingView)
-    View hitAndStayView;
-    private
-    @BindView(R.id.playAgainView)
-    View playAgainView;
-    private
-    @BindView(R.id.dealerFirstCardView)
-    ImageView dealerFirstCardView;
-    private
-    @BindView(R.id.dealerSecondCardView)
-    ImageView dealerSecondCardView;
-    private
-    @BindView(R.id.dealerHand)
-    LinearLayout dealerHandView;
-    private
-    @BindView(R.id.playerHand)
-    LinearLayout playerHandView;
-    private
-    @BindView(R.id.playerFirstCardView)
-    ImageView playerFirstCardView;
-    private
-    @BindView(R.id.playerSecondCardView)
-    ImageView playerSecondCardView;
+public class GameFragment extends Fragment implements PropertyChangeListener {
+
+    @BindView(R.id.text_money) TextView moneyTextView;
+    @BindView(R.id.text_bet) TextView betTextView;
+    @BindView(R.id.text_player_score) TextView playerScoreTextView;
+    @BindView(R.id.text_dealer_score) TextView dealerScoreTextView;
+    @BindView(R.id.text_showdown_description) TextView handOverTextView;
+    @BindView(R.id.text_bet_reminder) TextView bigBetView;
+    @BindView(R.id.button_bet) Button betButton;
+    @BindView(R.id.button_increment_bet) Button incrementBetButton;
+    @BindView(R.id.button_decrement_bet) Button decrementBetButton;
+    @BindView(R.id.button_double) Button doubleButton;
+    @BindView(R.id.button_split) Button splitButton;
+    @BindView(R.id.layout_bet_decision) View betDecisionView;
+    @BindView(R.id.layout_hitting_decision) View hitAndStayView;
+    @BindView(R.id.playAgainView) View playAgainView;
+    @BindView(R.id.layout_dealer_hand) LinearLayout dealerHandView;
+    @BindView(R.id.layout_player_hand) LinearLayout playerHandView;
 
     private Unbinder unbinder;
 
-    private int currentBet;
-    private int currentMoney;
-    private Hand playerHand;
-    private Hand dealerHand;
-    private Deck deck;
+    private Game game;
+    private Player player;
     private NumberFormat currencyFormat;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        currentBet = 0;
-        deck = new Deck();
-        dealerHand = new Hand(deck);
-        playerHand = new Hand(deck);
+        game = Game.getInstance();
+        player = new Player(game);
+        game.setStatus(GameStatus.BETTING, player);
+
+
+        game.addChangeListener(this);
+        player.addChangeListener(this);
+
         currencyFormat = NumberFormat.getCurrencyInstance();
         currencyFormat.setMaximumFractionDigits(0);
     }
@@ -118,158 +85,211 @@ public class GameFragment extends Fragment {
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        unbinder.unbind();
-    }
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
-        int defaultValue = getResources().getInteger(R.integer.saved_money_default);
-        currentMoney = sharedPref.getInt("money", defaultValue);
-        moneyTextView.setText(String.format(Locale.US, "$%d", currentMoney));
-        if (currentBet > 0) {
-            betButton.setEnabled(true);
-            decrementBetButton.setEnabled(true);
-        } else {
-            betButton.setEnabled(false);
-            decrementBetButton.setEnabled(false);
-        }
+        setMoneyView(game.getMoney());
+        setBetViews(player.getBet());
+        updatePlayerHandView(playerHandView, player.getHand());
+        updateDealerHandView(dealerHandView, game.getDealerHand(), game.getStatus(player));
     }
 
     @Override
     public void onStop() {
         super.onStop();
 
-        if (betDecisionView.getVisibility() == View.VISIBLE) {
-            changeBet((-1) * currentBet);
+        if (game.getStatus(player) == GameStatus.BETTING) {
+            game.setMoney(game.getMoney() + player.getBet());
         }
-
-        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putInt("money", currentMoney);
-        editor.apply();
     }
 
-    @OnClick(R.id.decrementBetButton)
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
+    }
+
+    private void switchToBetting() {
+        game.reset();
+        player.reset();
+        game.setMoney(game.getMoney() - player.getBet());
+    }
+
+    @OnClick(R.id.button_decrement_bet)
     public void decrementBet() {
-        changeBet(-100);
+        player.setBet(player.getBet() - 100);
+        game.setMoney(game.getMoney() + 100);
     }
 
-    @OnClick(R.id.incrementBetButton)
+    @OnClick(R.id.button_increment_bet)
     public void incrementBet() {
-        changeBet(100);
+        player.setBet(player.getBet() + 100);
+        game.setMoney(game.getMoney() - 100);
     }
 
-    @OnClick(R.id.betButton)
-    public void onBet() {
-
-        // switch to view for player hitting and staying
-        betDecisionView.setVisibility(View.GONE);
-        hitAndStayView.setVisibility(View.VISIBLE);
-        bigBetView.setText(currencyFormat.format(currentBet));
-
-        dealerHand.draw();
-        playerHand.draw();
-        playerHand.draw();
-        dealerHand.draw();
-
-        playerFirstCardView.setImageResource(playerHand.get(0).drawableId());
-        playerSecondCardView.setImageResource(playerHand.get(1).drawableId());
-        dealerSecondCardView.setImageResource(dealerHand.get(1).drawableId());
-
-        updateScoreViews(false);
-
-        // enable split option if the cards are the same value
-        if (playerHand.get(0).value() == playerHand.get(1).value() && playerHand.size() == 2) {
-            splitButton.setEnabled(true);
-        }
-
-        // check for blackjacks
-        if (playerHand.getScore(true) == 21 || dealerHand.getScore(true) == 21) {
-            endHand();
-        }
-    }
-
-    private void updateScoreViews(boolean showDealerFirstCard) {
-        playerScoreTextView.setText(String.valueOf(playerHand.getScore(true)));
-        dealerScoreTextView.setText(String.valueOf(dealerHand.getScore(showDealerFirstCard)));
-    }
-
-    @OnClick(R.id.stayButton)
-    public void onStay() {
-        dealerFirstCardView.setImageResource(dealerHand.get(0).drawableId());
-        hitDealer();
-        endHand();
-    }
-
-    private void hitDealer() {
-        // dealer stays on all 17s
-        while (dealerHand.getScore(true) < 17) {
-            Card hitCard = dealerHand.draw();
-            addCardToView(dealerHandView, hitCard);
-        }
-    }
-
-    @OnClick(R.id.hitButton)
-    public void onHit() {
-        Card hitCard = playerHand.draw();
-        addCardToView(playerHandView, hitCard);
-
-        doubleButton.setEnabled(false);
-        updateScoreViews(false);
-        if (playerHand.getScore(true) > 21) {
-            endHand();
-        }
-    }
-
-    /**
-     * Changes the current bet value, the player's money, and the corresponding views
-     *
-     * @param change How much to increase the bet by, negative values represent a decrease
-     */
-    private void changeBet(int change) {
-        if (currentBet >= (-1) * change && currentMoney >= change) {
-            currentBet = currentBet + change;
-            currentMoney = currentMoney - change;
-            betTextView.setText(currencyFormat.format(currentBet));
-            moneyTextView.setText(currencyFormat.format(currentMoney));
-        }
-        if (currentBet > 0) {
+    private void setBetViews(int bet) {
+        betTextView.setText(currencyFormat.format(bet));
+        bigBetView.setText(currencyFormat.format(bet));
+        if (bet > 0) {
             betButton.setEnabled(true);
             decrementBetButton.setEnabled(true);
         } else {
             betButton.setEnabled(false);
             decrementBetButton.setEnabled(false);
         }
-        if (currentMoney > 0) {
+    }
+
+    private void setMoneyView(int money) {
+        moneyTextView.setText(currencyFormat.format(money));
+        if (money > 0) {
             incrementBetButton.setEnabled(true);
         } else {
             incrementBetButton.setEnabled(false);
         }
     }
 
+    private void setButtonsEnabled() {
+        if (player.getHand().isSplitable()) {
+            splitButton.setEnabled(true);
+        } else {
+            splitButton.setEnabled(false);
+        }
+        if (player.getHand().size() == 2) {
+            doubleButton.setEnabled(true);
+        } else {
+            doubleButton.setEnabled(false);
+        }
+    }
+
+    @OnClick(R.id.button_bet)
+    public void onBet() {
+        game.setStatus(GameStatus.HITTING, player);
+    }
+
+    private void switchToHitting() {
+        game.getDealerHand().draw();
+
+        player.getHand().draw();
+        player.getHand().draw();
+
+        game.getDealerHand().draw();
+
+        if (player.getHand().isSplitable()) {
+            splitButton.setEnabled(true);
+        }
+
+        checkBlackjack(player.getHand());
+        checkBlackjack(game.getDealerHand());
+    }
+
+    private void checkBlackjack(Hand hand) {
+        if (hand.size() == 2 && hand.getScore(true) == 21) {
+            game.setStatus(GameStatus.WAITING, player);
+        }
+    }
+
+    @OnClick(R.id.button_hit)
+    public void onHit() {
+        player.getHand().draw();
+
+        if (player.getHand().getScore(true) > 21) {
+            game.setStatus(GameStatus.WAITING, player);
+        }
+    }
+
+    private void updateScoreViews(boolean showDealerFirstCard) {
+        playerScoreTextView.setText(String.valueOf(player.getHand().getScore(true)));
+        dealerScoreTextView.setText(String.valueOf(game.getDealerHand().getScore(showDealerFirstCard)));
+    }
+
+    @OnClick(R.id.button_stay)
+    public void onStay() {
+        game.setStatus(GameStatus.WAITING, player);
+    }
+
+    private void hitDealer() {
+        // dealer stays on all 17s
+        game.getDealerHand().drawUpToSeventeen();
+    }
+
+    private void updateDealerHandView(LinearLayout view, Hand hand, GameStatus status) {
+        view.removeAllViews();
+        if (status == GameStatus.SHOWDOWN) {
+            for (int i = 0; i < hand.size(); i++) {
+                addCardToView(view, hand.get(i));
+            }
+        } else {
+            addCardToView(view, Card.dealerBlank);
+            if (status != GameStatus.BETTING && hand.size() >= 2) {
+                addCardToView(view, hand.get(1));
+            } else {
+                addCardToView(view, Card.dealerBlank);
+            }
+        }
+    }
+
+    private void updatePlayerHandView(LinearLayout view, Hand hand) {
+        // remove any extra views
+        if (view.getChildCount() > hand.size()) {
+            int count = view.getChildCount() - hand.size();
+            view.removeViews(hand.size(), count);
+        }
+        // set any existing views
+        for (int i = 0; i < view.getChildCount(); i++) {
+            ImageView cardImageView = (ImageView) view.getChildAt(i);
+            setImageForView(hand.get(i), cardImageView);
+        }
+        // add any missing views
+        for (int i = view.getChildCount(); i < hand.size(); i++) {
+            addCardToView(view, hand.get(i));
+        }
+        for (int i = hand.size(); i < 2; i++) {
+            addCardToView(view, Card.playerBlank);
+        }
+    }
+
     private void addCardToView(LinearLayout handView, Card card) {
         ImageView cardView = (ImageView) LayoutInflater.from(handView.getContext())
                 .inflate(R.layout.card_item, handView, false);
-        cardView.setImageResource(card.drawableId());
+
+        cardView = setImageForView(card, cardView);
+
+        if (handView.getChildCount() == 0) {
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(cardView.getLayoutParams());
+            params.setMargins(0, 0, 0, 0);
+            cardView.setLayoutParams(params);
+        }
 
         handView.addView(cardView);
     }
 
-    @OnClick(R.id.doubleButton)
-    public void onDouble() {
-        changeBet(currentBet);
-        Card hitCard = playerHand.draw();
-        addCardToView(playerHandView, hitCard);
-        hitDealer();
-        endHand();
+    private ImageView setImageForView(Card card, ImageView imageView) {
+        String rank = card.rank();
+        if (rank.equals("king") || rank.equals("queen") || rank.equals("jack")) {
+            imageView.setImageResource(card.getImageID());
+
+        } else {
+            imageView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+            try {
+                SVG svg = SVG.getFromResource(getActivity(), card.getImageID());
+                Drawable drawable = new PictureDrawable(svg.renderToPicture());
+                imageView.setImageDrawable(drawable);
+            } catch (SVGParseException e) {
+                Log.e(GameFragment.class.toString(), "failed to parse svg: " + e.toString());
+            }
+        }
+        return imageView;
     }
 
-    @OnClick(R.id.splitButton)
+    @OnClick(R.id.button_double)
+    public void onDouble() {
+        player.setBet(player.getBet() * 2);
+
+        player.getHand().draw();
+        onStay();
+    }
+
+    @OnClick(R.id.button_split)
     public void onSplit() {
         /*
         bet * 2
@@ -282,90 +302,126 @@ public class GameFragment extends Fragment {
          */
     }
 
-    @OnClick(R.id.playAgainButton)
-    public void playAgain() {
-        if (currentMoney <= 0) {
-            currentMoney = 1000;
-        }
-        playAgainView.setVisibility(View.GONE);
-        betDecisionView.setVisibility(View.VISIBLE);
-        splitButton.setEnabled(false);
-        doubleButton.setEnabled(true);
-        deck.reset();
-        currentBet = 0;
-        changeBet(0);
-        dealerScoreTextView.setText(String.valueOf(0));
-        playerScoreTextView.setText(String.valueOf(0));
-        playerHand.clear();
-        dealerHand.clear();
-        int dealerCardCount = dealerHandView.getChildCount();
-        for (int i = dealerCardCount - 1; i >= 2; i--) {
-            dealerHandView.removeViewAt(i);
-        }
-        int playerCardCount = playerHandView.getChildCount();
-        for (int i = playerCardCount - 1; i >= 2; i--) {
-            playerHandView.removeViewAt(i);
-        }
-        dealerFirstCardView.setImageResource(R.drawable.b1fv);
-        dealerSecondCardView.setImageResource(R.drawable.b1fv);
-        playerFirstCardView.setImageResource(R.drawable.b2fv);
-        playerSecondCardView.setImageResource(R.drawable.b2fv);
+    private void switchToWaiting() {
+
     }
 
     private void endHand() {
+        // gets called by the listener after status is set to showdown
 
-        int playerScore = playerHand.getScore(true);
-        int dealerScore = dealerHand.getScore(true);
+        int playerScore = player.getHand().getScore(true);
+        int dealerScore = game.getDealerHand().getScore(true);
         updateScoreViews(true);
-        dealerFirstCardView.setImageResource(dealerHand.get(0).drawableId());
         Resources resources = getResources();
 
         if (playerScore > dealerScore && playerScore <= 21) {
             // player wins!
-            String text = resources.getString(R.string.player_wins) + currentBet + "!";
+            String text = resources.getString(R.string.player_wins) + player.getBet() + "!";
             handOverTextView.setText(text);
-            showMoneyChange(currentBet * 2);
-            currentMoney += (currentBet * 2);
-        } else if (playerScore > dealerScore && playerScore == 21 && playerHand.size() == 2) {
+            showMoneyChange(player.getBet() * 2);
+            game.setMoney(game.getMoney() + (player.getBet() * 2));
+        } else if (playerScore > dealerScore && playerScore == 21 && player.getHand().size() == 2) {
             // player has a blackjack!
-            int winnings = (int) (currentBet * 1.5);
+            int winnings = (int) (player.getBet() * 1.5);
             String text = resources.getString(R.string.player_blackjack) + winnings + "!";
             handOverTextView.setText(text);
-            showMoneyChange(currentBet * 2.5);
-            currentMoney += (currentBet * 2.5);
+            showMoneyChange(player.getBet() * 2.5);
+            game.setMoney(game.getMoney() + (int) (player.getBet() * 2.5));
         } else if (playerScore <= 21 && dealerScore > 21) {
             // dealer busts!
-            String text = resources.getString(R.string.dealer_busts) + currentBet + "!";
+            String text = resources.getString(R.string.dealer_busts) + player.getBet() + "!";
             handOverTextView.setText(text);
-            showMoneyChange(currentBet * 2);
-            currentMoney += (currentBet * 2);
+            showMoneyChange(player.getBet() * 2);
+            game.setMoney(game.getMoney() + (player.getBet() * 2));
         } else if (dealerScore > playerScore && dealerScore <= 21) {
             // dealer wins
-            String text = resources.getString(R.string.dealer_wins) + currentBet + ".";
+            String text = resources.getString(R.string.dealer_wins) + player.getBet() + ".";
             handOverTextView.setText(text);
-        } else if (dealerScore > playerScore && dealerScore == 21 && dealerHand.size() == 2) {
+        } else if (dealerScore > playerScore && dealerScore == 21
+                && game.getDealerHand().size() == 2) {
             // dealer has a blackjack
-            String text = resources.getString(R.string.dealer_blackjack) + currentBet + ".";
+            String text = resources.getString(R.string.dealer_blackjack) + player.getBet() + ".";
             handOverTextView.setText(text);
         } else if (dealerScore == playerScore && dealerScore <= 21) {
             // push
             handOverTextView.setText(R.string.push);
-            showMoneyChange(currentBet);
-            currentMoney += currentBet;
+            showMoneyChange(player.getBet());
+            game.setMoney(game.getMoney() + player.getBet());
         } else if (playerScore > 21) {
             // player busts
-            String text = resources.getString(R.string.player_busts) + currentBet + ".";
+            String text = resources.getString(R.string.player_busts) + player.getBet() + ".";
             handOverTextView.setText(text);
         }
-
-        currentBet = 0;
-
-        hitAndStayView.setVisibility(View.GONE);
-        playAgainView.setVisibility(View.VISIBLE);
     }
 
     private void showMoneyChange(double change) {
         moneyTextView.setText(String.format("%s\n+ %s", moneyTextView.getText(), currencyFormat.format(change)));
     }
 
+    @OnClick(R.id.button_play_again)
+    public void playAgain() {
+        if (game.numPlayers() > 1) {
+            game.removePlayer(player, this);
+            // destroy fragment
+        } else {
+            game.setStatus(GameStatus.BETTING, player);
+        }
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+        switch (propertyChangeEvent.getPropertyName()) {
+            case "player hand":
+                updatePlayerHandView(playerHandView, player.getHand());
+                updateScoreViews(game.getStatus(player) == GameStatus.SHOWDOWN);
+                setButtonsEnabled();
+                break;
+            case "dealer hand":
+                updateDealerHandView(dealerHandView, game.getDealerHand(), game.getStatus(player));
+                updateScoreViews(game.getStatus(player) == GameStatus.SHOWDOWN);
+                break;
+            case "bet":
+                setBetViews(player.getBet());
+                break;
+            case "money":
+                setMoneyView(game.getMoney());
+                break;
+            case "status":
+                GameStatus status = game.getStatus(player);
+
+                showDecisionView(status);
+//                updateDealerHandView(dealerHandView, game.getDealerHand(), status);
+
+                if (status == GameStatus.BETTING) {
+                    switchToBetting();
+                }
+                if (status == GameStatus.HITTING) {
+                    switchToHitting();
+                }
+                if (status == GameStatus.WAITING) {
+                    switchToWaiting();
+                }
+                if (status == GameStatus.SHOWDOWN) {
+                    hitDealer();
+                    updateDealerHandView(dealerHandView, game.getDealerHand(), status);
+                    endHand();
+                }
+        }
+    }
+
+    private void showDecisionView(GameStatus status) {
+        if (status == GameStatus.BETTING) {
+            hitAndStayView.setVisibility(View.GONE);
+            playAgainView.setVisibility(View.GONE);
+            betDecisionView.setVisibility(View.VISIBLE);
+        } else if (status == GameStatus.HITTING) {
+            betDecisionView.setVisibility(View.GONE);
+            playAgainView.setVisibility(View.GONE);
+            hitAndStayView.setVisibility(View.VISIBLE);
+        } else if (status == GameStatus.SHOWDOWN) {
+            betDecisionView.setVisibility(View.GONE);
+            hitAndStayView.setVisibility(View.GONE);
+            playAgainView.setVisibility(View.VISIBLE);
+        }
+    }
 }

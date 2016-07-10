@@ -1,28 +1,31 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.bryancapps.blackjack.GameActivity">
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:fitsSystemWindows="true"
+              android:orientation="vertical"
+              android:paddingBottom="@dimen/activity_vertical_margin"
+              android:paddingLeft="@dimen/activity_horizontal_margin"
+              android:paddingRight="@dimen/activity_horizontal_margin"
+              android:paddingTop="@dimen/activity_vertical_margin"
+              tools:context="com.bryancapps.blackjack.GameActivity">
 
     <RelativeLayout
+        android:id="@+id/layout_dealer"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="13">
+        android:layout_height="0dp"
+        android:layout_weight="3">
 
         <TextView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="@string/dealer_text"
             android:textColor="@android:color/black"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            />
 
         <LinearLayout
-            android:id="@+id/dealerHand"
+            android:id="@+id/layout_dealer_hand"
             android:layout_width="match_parent"
             android:layout_height="120dp"
             android:layout_centerInParent="true"
@@ -30,41 +33,43 @@
             android:orientation="horizontal">
 
             <ImageView
-                android:id="@+id/dealerFirstCardView"
+                android:id="@+id/image_dealer_first_card"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:adjustViewBounds="true"
                 android:contentDescription="@string/dealer_first_card_hint"
-                android:src="@drawable/b1fv" />
+                tools:src="@drawable/king_of_clubs"/>
 
             <ImageView
-                android:id="@+id/dealerSecondCardView"
+                android:id="@+id/image_dealer_second_card"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_marginLeft="-50dp"
+                android:layout_marginLeft="-55dp"
                 android:adjustViewBounds="true"
                 android:contentDescription="@string/dealer_second_card_hint"
-                android:src="@drawable/b1fv" />
+                tools:src="@drawable/queen_of_clubs"/>
 
         </LinearLayout>
 
         <TextView
-            android:id="@+id/dealerScoreTextView"
+            android:id="@+id/text_dealer_score"
             android:layout_width="70dp"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:layout_alignTop="@+id/dealerHand"
+            android:layout_alignTop="@+id/layout_dealer_hand"
             android:ellipsize="end"
             android:gravity="right"
-            android:text="@string/dealer_initial_score" />
+            android:text="@string/dealer_initial_score"
+            tools:text="20"/>
 
     </RelativeLayout>
 
     <RelativeLayout
+        android:id="@+id/layout_player"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="13">
+        android:layout_height="0dp"
+        android:layout_weight="3">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -76,7 +81,8 @@
                 android:layout_height="wrap_content"
                 android:text="@string/player_text"
                 android:textColor="@android:color/black"
-                android:textSize="20sp" />
+                android:textSize="20sp"
+                />
 
             <TextView
                 android:layout_width="0dp"
@@ -87,7 +93,7 @@
                 android:text="@string/your_money_label" />
 
             <TextView
-                android:id="@+id/moneyTextView"
+                android:id="@+id/text_money"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="right"
@@ -96,7 +102,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/playerHand"
+            android:id="@+id/layout_player_hand"
             android:layout_width="match_parent"
             android:layout_height="120dp"
             android:layout_centerInParent="true"
@@ -104,198 +110,208 @@
             android:orientation="horizontal">
 
             <ImageView
-                android:id="@+id/playerFirstCardView"
+                android:id="@+id/image_player_first_card"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:adjustViewBounds="true"
                 android:contentDescription="@string/player_first_card_hint"
-                android:src="@drawable/b2fv" />
+                tools:src="@drawable/queen_of_hearts"/>
 
             <ImageView
-                android:id="@+id/playerSecondCardView"
+                android:id="@+id/image_player_second_card"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_marginLeft="-50dp"
+                android:layout_marginLeft="-55dp"
                 android:adjustViewBounds="true"
                 android:contentDescription="@string/player_second_card_hint"
-                android:src="@drawable/b2fv" />
+                tools:src="@drawable/king_of_hearts"/>
 
         </LinearLayout>
 
         <TextView
-            android:id="@+id/playerScoreTextView"
+            android:id="@+id/text_player_score"
             android:layout_width="70dp"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:layout_alignTop="@+id/playerHand"
+            android:layout_alignTop="@+id/layout_player_hand"
             android:ellipsize="end"
             android:gravity="right"
-            android:text="@string/player_initial_score" />
+            android:text="@string/player_initial_score"
+            tools:text="20"/>
 
     </RelativeLayout>
 
-    <LinearLayout
-        android:id="@+id/betDecisionView"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="18"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:visibility="visible">
+        android:layout_weight="2">
 
         <LinearLayout
+            android:id="@+id/layout_bet_decision"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/decrementBetButton"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="@string/decrement_bet"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/betTextView"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="@string/zero_dollars"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="@android:color/black"
-                android:textSize="36sp" />
-
-            <Button
-                android:id="@+id/incrementBetButton"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="@string/increment_bet"
-                android:textSize="16sp" />
-        </LinearLayout>
-
-        <Button
-            android:id="@+id/betButton"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_weight="1"
-            android:enabled="false"
-            android:text="@string/bet"
-            android:textSize="24sp" />
-
-    </LinearLayout>
-
-    <RelativeLayout
-        android:id="@+id/hittingAndStayingView"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="18"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:visibility="gone"
-        tools:context="com.bryancapps.blackjack.GameActivity">
-
-        <LinearLayout
-            android:layout_width="100dp"
             android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <Button
-                android:id="@+id/hitButton"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:text="@string/hit"
-                android:textSize="20sp" />
-
-            <Button
-                android:id="@+id/stayButton"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:text="@string/stay"
-                android:textSize="20sp" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
             android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:visibility="visible">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="@string/your_bet_label" />
-
-            <TextView
-                android:id="@+id/betTextView2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="@string/zero_dollars"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="@android:color/black"
-                android:textSize="36sp" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="100dp"
-            android:layout_height="match_parent"
-            android:layout_alignParentEnd="true"
-            android:gravity="right"
-            android:orientation="vertical">
-
-            <Button
-                android:id="@+id/doubleButton"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:text="@string/doubleBet"
-                android:textSize="20sp" />
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/button_decrement_bet"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="@string/decrement_bet"
+                    android:textSize="16sp"/>
+
+                <TextView
+                    android:id="@+id/text_bet"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="@string/zero_dollars"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="@android:color/black"
+                    android:textSize="36sp"/>
+
+                <Button
+                    android:id="@+id/button_increment_bet"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="@string/increment_bet"
+                    android:textSize="16sp"/>
+            </LinearLayout>
 
             <Button
-                android:id="@+id/splitButton"
+                android:id="@+id/button_bet"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                android:layout_gravity="center_horizontal"
                 android:layout_weight="1"
                 android:enabled="false"
-                android:text="@string/split"
-                android:textSize="20sp" />
+                android:text="@string/bet"
+                android:textSize="24sp"/>
+
         </LinearLayout>
 
-    </RelativeLayout>
-
-    <LinearLayout
-        android:id="@+id/playAgainView"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="18"
-        android:gravity="center_horizontal"
-        android:orientation="vertical"
-        android:visibility="gone"
-        tools:context="com.bryancapps.blackjack.GameActivity">
-
-        <TextView
-            android:id="@+id/handOverTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
-
-        <Button
-            android:id="@+id/playAgainButton"
+        <RelativeLayout
+            android:id="@+id/layout_hitting_decision"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="@string/play_again" />
-    </LinearLayout>
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            tools:context="com.bryancapps.blackjack.GameActivity">
+
+            <LinearLayout
+                android:id="@+id/layout_hit_stay"
+                android:layout_width="100dp"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/button_hit"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:text="@string/hit"
+                    android:textSize="20sp"/>
+
+                <Button
+                    android:id="@+id/button_stay"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:text="@string/stay"
+                    android:textSize="20sp"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_bet_indicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentTop="true"
+                android:layout_toLeftOf="@+id/layout_double_split"
+                android:layout_toRightOf="@+id/layout_hit_stay"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/your_bet_label"/>
+
+                <TextView
+                    android:id="@+id/text_bet_reminder"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/zero_dollars"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="@android:color/black"
+                    android:textSize="36sp"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_double_split"
+                android:layout_width="100dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentEnd="true"
+                android:gravity="right"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/button_double"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:text="@string/doubleBet"
+                    android:textSize="20sp"/>
+
+                <Button
+                    android:id="@+id/button_split"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:enabled="false"
+                    android:text="@string/split"
+                    android:textSize="20sp"/>
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/playAgainView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:visibility="gone"
+            tools:context="com.bryancapps.blackjack.GameActivity">
+
+            <TextView
+                android:id="@+id/text_showdown_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+            <Button
+                android:id="@+id/button_play_again"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/play_again"/>
+        </LinearLayout>
+    </FrameLayout>
 
 </LinearLayout>
