@@ -8,7 +8,7 @@
     tools:context=".MainActivity">
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/button_play"
         android:layout_width="300dp"
         android:layout_height="100dp"
         android:layout_alignParentBottom="true"
@@ -21,23 +21,30 @@
         android:textSize="40sp" />
 
     <TextView
+        android:id="@+id/text_main_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/imageView"
+        android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
+        android:layout_marginTop="100dp"
         android:text="@string/app_name"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textSize="42sp" />
+        android:textSize="42sp"/>
 
     <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="wrap_content"
+        android:id="@+id/image_icon"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/button"
+        android:layout_above="@+id/button_play"
+        android:layout_below="@+id/text_main_title"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="62dp"
-        android:layout_marginTop="62dp"
+        android:adjustViewBounds="false"
         android:contentDescription="@string/main_activity_logo_description"
-        android:src="@mipmap/ic_launcher"/>
+        android:paddingBottom="25dp"
+        android:paddingEnd="25dp"
+        android:paddingStart="25dp"
+        android:paddingTop="25dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/main_image"/>
 
 </RelativeLayout>
