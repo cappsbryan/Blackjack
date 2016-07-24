@@ -104,8 +104,8 @@ public class GameFragment extends Fragment implements PropertyChangeListener {
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
+    public void onDestroy() {
+        super.onDestroy();
 
         game.removeChangeListener(this);
         player.removeChangeListener(this);
@@ -152,7 +152,7 @@ public class GameFragment extends Fragment implements PropertyChangeListener {
         }
     }
 
-    private void setMoneyView(int money) {
+    private void setMoneyView(long money) {
         moneyTextView.setText(currencyFormat.format(money));
         if (money > 0) {
             incrementBetButton.setEnabled(true);
@@ -190,9 +190,6 @@ public class GameFragment extends Fragment implements PropertyChangeListener {
         if (player.getHand().isSplittable()) {
             splitButton.setEnabled(true);
         }
-
-        checkBlackjack(player.getHand());
-        checkBlackjack(game.getDealerHand());
     }
 
     private void checkBlackjack(Hand hand) {
@@ -336,58 +333,49 @@ public class GameFragment extends Fragment implements PropertyChangeListener {
     private void endHand() {
         // gets called by the listener after status is set to showdown
 
-        int playerScore = player.getHand().getScore(true);
-        int dealerScore = game.getDealerHand().getScore(true);
         updateScoreViews(true);
         Resources resources = getResources();
+
+        long winnings = game.determineWinnings(player);
+        showMoneyChange(winnings);
+        game.setMoney(game.getMoney() + winnings);
+
+        String text;
+        switch (game.determineOutcome(player)) {
+            case PUSH:
+                handOverTextView.setText(R.string.push);
+                break;
+            case PLAYER_BLACKJACK:
+                text = resources.getString(R.string.player_blackjack) + (winnings - player.getBet()) + "!";
+                handOverTextView.setText(text);
+                break;
+            case PLAYER_WIN:
+                text = resources.getString(R.string.player_wins) + (winnings - player.getBet()) + "!";
+                handOverTextView.setText(text);
+                break;
+            case DEALER_BUST:
+                text = resources.getString(R.string.dealer_busts) + (winnings - player.getBet()) + "!";
+                handOverTextView.setText(text);
+                break;
+            case DEALER_WIN:
+                text = resources.getString(R.string.dealer_wins) + player.getBet() + ".";
+                handOverTextView.setText(text);
+                break;
+            case PLAYER_BUST:
+                text = resources.getString(R.string.player_busts) + player.getBet() + ".";
+                handOverTextView.setText(text);
+        }
 
         if (player.isDoubled()) {
             player.setBet(player.getBet() / 2);
             player.setDoubled(false);
         }
-
-        if (playerScore > dealerScore && playerScore <= 21) {
-            // player wins!
-            String text = resources.getString(R.string.player_wins) + player.getBet() + "!";
-            handOverTextView.setText(text);
-            showMoneyChange(player.getBet() * 2);
-            game.setMoney(game.getMoney() + (player.getBet() * 2));
-        } else if (playerScore > dealerScore && playerScore == 21 && player.getHand().size() == 2) {
-            // player has a blackjack!
-            int winnings = (int) (player.getBet() * 1.5);
-            String text = resources.getString(R.string.player_blackjack) + winnings + "!";
-            handOverTextView.setText(text);
-            showMoneyChange(player.getBet() * 2.5);
-            game.setMoney(game.getMoney() + (int) (player.getBet() * 2.5));
-        } else if (playerScore <= 21 && dealerScore > 21) {
-            // dealer busts!
-            String text = resources.getString(R.string.dealer_busts) + player.getBet() + "!";
-            handOverTextView.setText(text);
-            showMoneyChange(player.getBet() * 2);
-            game.setMoney(game.getMoney() + (player.getBet() * 2));
-        } else if (dealerScore > playerScore && dealerScore <= 21) {
-            // dealer wins
-            String text = resources.getString(R.string.dealer_wins) + player.getBet() + ".";
-            handOverTextView.setText(text);
-        } else if (dealerScore > playerScore && dealerScore == 21
-                && game.getDealerHand().size() == 2) {
-            // dealer has a blackjack
-            String text = resources.getString(R.string.dealer_blackjack) + player.getBet() + ".";
-            handOverTextView.setText(text);
-        } else if (dealerScore == playerScore && dealerScore <= 21) {
-            // push
-            handOverTextView.setText(R.string.push);
-            showMoneyChange(player.getBet());
-            game.setMoney(game.getMoney() + player.getBet());
-        } else if (playerScore > 21) {
-            // player busts
-            String text = resources.getString(R.string.player_busts) + player.getBet() + ".";
-            handOverTextView.setText(text);
-        }
     }
 
     private void showMoneyChange(double change) {
-        moneyTextView.setText(String.format("%s\n+ %s", moneyTextView.getText(), currencyFormat.format(change)));
+        if (change > 0) {
+            moneyTextView.setText(String.format("%s\n+ %s", moneyTextView.getText(), currencyFormat.format(change)));
+        }
     }
 
     @OnClick(R.id.button_play_again)
@@ -405,10 +393,12 @@ public class GameFragment extends Fragment implements PropertyChangeListener {
                 updatePlayerHandView(playerHandView, player.getHand());
                 updateScoreViews(game.getStatus(player) == GameStatus.SHOWDOWN);
                 setButtonsEnabled();
+                checkBlackjack(player.getHand());
                 break;
             case "dealer hand":
                 updateDealerHandView(dealerHandView, game.getDealerHand(), game.getStatus(player));
                 updateScoreViews(game.getStatus(player) == GameStatus.SHOWDOWN);
+                checkBlackjack(game.getDealerHand());
                 break;
             case "bet":
                 setBetViews(player.getBet());

@@ -27,7 +27,7 @@ public class GameActivity extends AppCompatActivity {
 
         SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
         int defaultValue = getResources().getInteger(R.integer.saved_money_default);
-        Game.getInstance().setMoney(sharedPref.getInt("money", defaultValue));
+        Game.getInstance().setMoney(sharedPref.getLong("money", defaultValue));
 
         if (Game.getInstance().getMoney() <= 0) {
             Game.getInstance().setMoney(defaultValue);
@@ -46,7 +46,7 @@ public class GameActivity extends AppCompatActivity {
 
         SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putInt("money", Game.getInstance().getMoney());
+        editor.putLong("money", Game.getInstance().getMoney());
         editor.apply();
     }
 

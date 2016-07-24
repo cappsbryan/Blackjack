@@ -1,6 +1,9 @@
 package com.bryancapps.blackjack;
 
+import android.util.Log;
+
 import com.bryancapps.blackjack.Models.Deck;
+import com.bryancapps.blackjack.Models.GameOutcome;
 import com.bryancapps.blackjack.Models.GameStatus;
 import com.bryancapps.blackjack.Models.Hand;
 import com.bryancapps.blackjack.Models.Player;
@@ -16,7 +19,7 @@ import java.util.List;
 public class Game implements PropertyChangeListener {
     private static final Game ourInstance = new Game();
     private final List<PropertyChangeListener> listeners = new ArrayList<>();
-    private int money;
+    private long money;
     private Hand dealerHand;
     private Deck deck;
     private List<Player> players;
@@ -83,11 +86,11 @@ public class Game implements PropertyChangeListener {
         return allWaiting;
     }
 
-    public int getMoney() {
+    public long getMoney() {
         return money;
     }
 
-    public void setMoney(int money) {
+    public void setMoney(long money) {
         String oldValue = String.valueOf(money);
         this.money = money;
         notifyListeners(this, "money", oldValue, String.valueOf(this.money));
@@ -140,5 +143,53 @@ public class Game implements PropertyChangeListener {
             notifyListeners(event.getSource(), event.getPropertyName(),
                     event.getOldValue(), event.getNewValue());
         }
+    }
+
+    public long determineWinnings(Player player) {
+        switch (determineOutcome(player)) {
+            case PLAYER_BLACKJACK:
+                return Math.round(player.getBet() * 2.5);
+            case PLAYER_WIN:
+                return player.getBet() * 2;
+            case DEALER_BUST:
+                return player.getBet() * 2;
+            case PUSH:
+                return player.getBet();
+            case DEALER_BLACKJACK:
+            case DEALER_WIN:
+            case PLAYER_BUST:
+            default:
+                return 0;
+        }
+    }
+
+    public GameOutcome determineOutcome(Player player) {
+        int playerScore = player.getHand().getScore(true);
+        int dealerScore = getDealerHand().getScore(true);
+
+        if (dealerScore == playerScore && dealerScore <= 21) {
+            // push
+            return GameOutcome.PUSH;
+        } else if (dealerScore == 21 && getDealerHand().size() == 2) {
+            // dealer has a blackjack
+            return GameOutcome.DEALER_BLACKJACK;
+        } else if (playerScore == 21 && player.getHand().size() == 2) {
+            // player has a blackjack!
+            return GameOutcome.PLAYER_BLACKJACK;
+        } else if (playerScore > dealerScore && playerScore <= 21) {
+            // player wins!
+            return GameOutcome.PLAYER_WIN;
+        } else if (playerScore <= 21 && dealerScore > 21) {
+            // dealer busts!
+            return GameOutcome.DEALER_BUST;
+        } else if (dealerScore > playerScore && dealerScore <= 21) {
+            // dealer wins
+            return GameOutcome.DEALER_WIN;
+        } else if (playerScore > 21) {
+            // player busts
+            return GameOutcome.PLAYER_BUST;
+        }
+        Log.e(getClass().getSimpleName(), "Error determining winner");
+        return GameOutcome.ERROR;
     }
 }
