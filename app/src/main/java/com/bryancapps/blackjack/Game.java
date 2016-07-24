@@ -8,26 +8,24 @@ import com.bryancapps.blackjack.Models.Player;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by bryancapps on 7/3/16.
  */
 public class Game implements PropertyChangeListener {
-    private static Game ourInstance = new Game();
-    private List<PropertyChangeListener> listeners = new ArrayList<>();
+    private static final Game ourInstance = new Game();
+    private final List<PropertyChangeListener> listeners = new ArrayList<>();
     private int money;
     private Hand dealerHand;
     private Deck deck;
-    private Map<Player, GameStatus> status;
+    private List<Player> players;
 
     private Game() {
         deck = new Deck();
         money = 0;
         dealerHand = new Hand(deck);
-        status = new HashMap<>();
+        players = new ArrayList<>();
 
         dealerHand.addChangeListener(this);
     }
@@ -36,21 +34,27 @@ public class Game implements PropertyChangeListener {
         return ourInstance;
     }
 
+    public void addPlayer(Player player) {
+        players.add(player);
+    }
+
+    public List<Player> getPlayers() {
+        return players;
+    }
+
     public GameStatus getStatus(Player player) {
-        return status.get(player);
+        return player.getStatus();
     }
 
     public void setStatus(GameStatus status, Player player) {
-        String oldValue = this.status.toString();
-        this.status.put(player, status);
+        player.setStatus(status);
 
         // move to showdown if every player is waiting
         if (shouldShowdown()) {
-            for (Player p : this.status.keySet()) {
-                this.status.put(p, GameStatus.SHOWDOWN);
+            for (Player p : players) {
+                p.setStatus(GameStatus.SHOWDOWN);
             }
         }
-        notifyListeners(this, "status", oldValue, this.status.toString());
     }
 
     public void reset() {
@@ -62,13 +66,13 @@ public class Game implements PropertyChangeListener {
     }
 
     public int numPlayers() {
-        return status.size();
+        return players.size();
     }
 
     private boolean shouldShowdown() {
         boolean allWaiting = true;
-        for (GameStatus s : this.status.values()) {
-            if (s != GameStatus.WAITING) {
+        for (Player player : players) {
+            if (player.getStatus() != GameStatus.WAITING) {
                 allWaiting = false;
             }
         }
@@ -105,9 +109,13 @@ public class Game implements PropertyChangeListener {
         notifyListeners(this, "deck", oldValue, this.deck.toString());
     }
 
-    private void notifyListeners(Object object, String property, String oldValue, String newValue) {
+    public void removePlayer(Player player) {
+        players.remove(player);
+    }
+
+    private void notifyListeners(Object source, String property, Object oldValue, Object newValue) {
         for (PropertyChangeListener name : listeners) {
-            name.propertyChange(new PropertyChangeEvent(this, property, oldValue, newValue));
+            name.propertyChange(new PropertyChangeEvent(source, property, oldValue, newValue));
         }
     }
 
@@ -115,16 +123,18 @@ public class Game implements PropertyChangeListener {
         listeners.add(newListener);
     }
 
-    @Override
-    public void propertyChange(PropertyChangeEvent event) {
-        if (event.getPropertyName().equals("hand")) {
-            notifyListeners(this, "dealer hand", event.getOldValue().toString(),
-                    event.getNewValue().toString());
-        }
+    public void removeChangeListener(PropertyChangeListener listener) {
+        listeners.remove(listener);
     }
 
-    public void removePlayer(Player player, PropertyChangeListener listener) {
-        listeners.remove(listener);
-        status.remove(player);
+    @Override
+    public void propertyChange(PropertyChangeEvent event) {
+        if (event.getSource() instanceof Hand) {
+            notifyListeners(this, "dealer hand",
+                    event.getOldValue(), event.getNewValue());
+        } else {
+            notifyListeners(event.getSource(), event.getPropertyName(),
+                    event.getOldValue(), event.getNewValue());
+        }
     }
 }

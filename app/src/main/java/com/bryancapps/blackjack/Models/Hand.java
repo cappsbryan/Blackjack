@@ -2,6 +2,7 @@ package com.bryancapps.blackjack.Models;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,10 +11,10 @@ import java.util.List;
  * <p/>
  * Created by bryancapps on 6/19/15.
  */
-public class Hand {
+public class Hand implements Serializable {
     private final ArrayList<Card> cardsInHand;
     private final Deck deck;
-    private List<PropertyChangeListener> listeners = new ArrayList<>();
+    private final List<PropertyChangeListener> listeners = new ArrayList<>();
 
     public Hand(Deck deck) {
         cardsInHand = new ArrayList<>();
@@ -24,10 +25,10 @@ public class Hand {
         add(new Card(cardId));
     }
 
-    private void add(Card card) {
-        String oldValue = cardsInHand.toString();
+    public void add(Card card) {
+        int index = cardsInHand.size();
         cardsInHand.add(card);
-        notifyListeners(this, "hand", oldValue, cardsInHand.toString());
+        notifyListeners("card " + index, null, cardsInHand.get(index));
     }
 
     public int size() {
@@ -73,7 +74,7 @@ public class Hand {
         return score;
     }
 
-    public boolean isSplitable() {
+    public boolean isSplittable() {
         return size() == 2 && get(0).value() == get(1).value();
     }
 
@@ -81,15 +82,19 @@ public class Hand {
         return cardsInHand.get(index);
     }
 
-    public void clear() {
-        String oldValue = cardsInHand.toString();
-        cardsInHand.clear();
-        notifyListeners(this, "hand", oldValue, cardsInHand.toString());
+    public Card remove(int index) {
+        return cardsInHand.remove(index);
     }
 
-    private void notifyListeners(Object object, String property, String oldValue, String newValue) {
+    public void clear() {
+        ArrayList<Card> oldValue = cardsInHand;
+        cardsInHand.clear();
+        notifyListeners("cards", oldValue, cardsInHand);
+    }
+
+    private void notifyListeners(String propertyName, Object oldValue, Object newValue) {
         for (PropertyChangeListener name : listeners) {
-            name.propertyChange(new PropertyChangeEvent(this, property, oldValue, newValue));
+            name.propertyChange(new PropertyChangeEvent(this, propertyName, oldValue, newValue));
         }
     }
 

@@ -2,12 +2,14 @@ package com.bryancapps.blackjack.Models;
 
 import com.bryancapps.blackjack.R;
 
+import java.io.Serializable;
+
 /**
  * Representation of a standard playing card
  * <p/>
  * Created by bryancapps on 8/12/15.
  */
-public class Card {
+public class Card implements Serializable {
     public final static Card dealerBlank = new Card(-1);
     public final static Card playerBlank = new Card(-2);
     private final static int[] IMAGE_IDS = {R.raw.ace_of_clubs, R.raw.ace_of_diamonds, R.raw.ace_of_hearts, R.raw.ace_of_spades, R.raw.two_of_clubs, R.raw.two_of_diamonds, R.raw.two_of_hearts, R.raw.two_of_spades, R.raw.three_of_clubs, R.raw.three_of_diamonds, R.raw.three_of_hearts, R.raw.three_of_spades, R.raw.four_of_clubs, R.raw.four_of_diamonds, R.raw.four_of_hearts, R.raw.four_of_spades, R.raw.five_of_clubs, R.raw.five_of_diamonds, R.raw.five_of_hearts, R.raw.five_of_spades, R.raw.six_of_clubs, R.raw.six_of_diamonds, R.raw.six_of_hearts, R.raw.six_of_spades, R.raw.seven_of_clubs, R.raw.seven_of_diamonds, R.raw.seven_of_hearts, R.raw.seven_of_spades, R.raw.eight_of_clubs, R.raw.eight_of_diamonds, R.raw.eight_of_hearts, R.raw.eight_of_spades, R.raw.nine_of_clubs, R.raw.nine_of_diamonds, R.raw.nine_of_hearts, R.raw.nine_of_spades, R.raw.ten_of_clubs, R.raw.ten_of_diamonds, R.raw.ten_of_hearts, R.raw.ten_of_spades, R.drawable.jack_of_clubs, R.drawable.jack_of_diamonds, R.drawable.jack_of_hearts, R.drawable.jack_of_spades, R.drawable.queen_of_clubs, R.drawable.queen_of_diamonds, R.drawable.queen_of_hearts, R.drawable.queen_of_spades, R.drawable.king_of_clubs, R.drawable.king_of_diamonds, R.drawable.king_of_hearts, R.drawable.king_of_spades};
@@ -22,8 +24,8 @@ public class Card {
     }
 
     public String rank() {
-        if (id < 0 || id > 52) {
-            return "";
+        if (this.equals(playerBlank) || this.equals(dealerBlank)) {
+            return "blank";
         }
         if (id >= 0 && id < 4) {
             return "ace";
@@ -39,9 +41,9 @@ public class Card {
     }
 
     public String suit() {
-        if (id < 0 || id > 52) {
-            return "";
-        }
+        if (this.equals(playerBlank)) return "player";
+        if (this.equals(dealerBlank)) return "dealer";
+
         int remainder = id % 4;
         if (remainder == 0) {
             return "clubs";

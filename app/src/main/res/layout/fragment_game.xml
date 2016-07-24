@@ -292,7 +292,7 @@
         </RelativeLayout>
 
         <LinearLayout
-            android:id="@+id/playAgainView"
+            android:id="@+id/layout_play_again"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center_horizontal"
@@ -303,15 +303,41 @@
             <TextView
                 android:id="@+id/text_showdown_description"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"/>
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                tools:text="@string/player_blackjack"/>
 
             <Button
                 android:id="@+id/button_play_again"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="2"
                 android:text="@string/play_again"/>
+
         </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_waiting"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone"
+            tools:context="com.bryancapps.blackjack.GameActivity">
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:maxLines="3"
+                android:text="@string/waiting"
+                android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+        </LinearLayout>
+
     </FrameLayout>
 
 </LinearLayout>

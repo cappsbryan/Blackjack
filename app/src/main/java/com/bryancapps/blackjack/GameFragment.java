@@ -1,11 +1,11 @@
 package com.bryancapps.blackjack;
 
-import android.app.Fragment;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.PictureDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -49,7 +49,8 @@ public class GameFragment extends Fragment implements PropertyChangeListener {
     @BindView(R.id.button_split) Button splitButton;
     @BindView(R.id.layout_bet_decision) View betDecisionView;
     @BindView(R.id.layout_hitting_decision) View hitAndStayView;
-    @BindView(R.id.playAgainView) View playAgainView;
+    @BindView(R.id.layout_play_again) View playAgainView;
+    @BindView(R.id.layout_waiting) View waitingView;
     @BindView(R.id.layout_dealer_hand) LinearLayout dealerHandView;
     @BindView(R.id.layout_player_hand) LinearLayout playerHandView;
 
@@ -64,9 +65,14 @@ public class GameFragment extends Fragment implements PropertyChangeListener {
         super.onCreate(savedInstanceState);
 
         game = Game.getInstance();
-        player = new Player(game);
-        game.setStatus(GameStatus.BETTING, player);
 
+        if (getArguments() != null && getArguments().getSerializable("player") != null) {
+            player = (Player) getArguments().getSerializable("player");
+            game.setStatus(GameStatus.HITTING, player);
+        } else {
+            player = new Player(game);
+            game.setStatus(GameStatus.BETTING, player);
+        }
 
         game.addChangeListener(this);
         player.addChangeListener(this);
@@ -80,6 +86,9 @@ public class GameFragment extends Fragment implements PropertyChangeListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_game, container, false);
         unbinder = ButterKnife.bind(this, view);
+
+        showDecisionView(player.getStatus());
+        updateScoreViews(false);
 
         return view;
     }
@@ -98,6 +107,9 @@ public class GameFragment extends Fragment implements PropertyChangeListener {
     public void onStop() {
         super.onStop();
 
+        game.removeChangeListener(this);
+        player.removeChangeListener(this);
+
         if (game.getStatus(player) == GameStatus.BETTING) {
             game.setMoney(game.getMoney() + player.getBet());
         }
@@ -111,6 +123,7 @@ public class GameFragment extends Fragment implements PropertyChangeListener {
 
     private void switchToBetting() {
         game.reset();
+        updateDealerHandView(dealerHandView, game.getDealerHand(), GameStatus.BETTING);
         player.reset();
         game.setMoney(game.getMoney() - player.getBet());
     }
@@ -149,7 +162,7 @@ public class GameFragment extends Fragment implements PropertyChangeListener {
     }
 
     private void setButtonsEnabled() {
-        if (player.getHand().isSplitable()) {
+        if (player.getHand().isSplittable()) {
             splitButton.setEnabled(true);
         } else {
             splitButton.setEnabled(false);
@@ -174,7 +187,7 @@ public class GameFragment extends Fragment implements PropertyChangeListener {
 
         game.getDealerHand().draw();
 
-        if (player.getHand().isSplitable()) {
+        if (player.getHand().isSplittable()) {
             splitButton.setEnabled(true);
         }
 
@@ -212,18 +225,26 @@ public class GameFragment extends Fragment implements PropertyChangeListener {
         game.getDealerHand().drawUpToSeventeen();
     }
 
-    private void updateDealerHandView(LinearLayout view, Hand hand, GameStatus status) {
-        view.removeAllViews();
-        if (status == GameStatus.SHOWDOWN) {
-            for (int i = 0; i < hand.size(); i++) {
-                addCardToView(view, hand.get(i));
-            }
+    private void updateDealerHandView(LinearLayout layout, Hand hand, GameStatus status) {
+        if (status == GameStatus.BETTING) {
+            layout.removeAllViews();
+            setCardForImageView(Card.dealerBlank, newImageViewForLayout(layout));
+            setCardForImageView(Card.dealerBlank, newImageViewForLayout(layout));
         } else {
-            addCardToView(view, Card.dealerBlank);
-            if (status != GameStatus.BETTING && hand.size() >= 2) {
-                addCardToView(view, hand.get(1));
-            } else {
-                addCardToView(view, Card.dealerBlank);
+            for (int i = 0; i < hand.size(); i++) {
+                Card card;
+                ImageView imageView;
+                if (i == 0 && status != GameStatus.SHOWDOWN) {
+                    card = Card.dealerBlank;
+                } else {
+                    card = hand.get(i);
+                }
+                if (i < layout.getChildCount()) {
+                    imageView = (ImageView) layout.getChildAt(i);
+                } else {
+                    imageView = newImageViewForLayout(layout);
+                }
+                setCardForImageView(card, imageView);
             }
         }
     }
@@ -237,22 +258,20 @@ public class GameFragment extends Fragment implements PropertyChangeListener {
         // set any existing views
         for (int i = 0; i < view.getChildCount(); i++) {
             ImageView cardImageView = (ImageView) view.getChildAt(i);
-            setImageForView(hand.get(i), cardImageView);
+            setCardForImageView(hand.get(i), cardImageView);
         }
         // add any missing views
         for (int i = view.getChildCount(); i < hand.size(); i++) {
-            addCardToView(view, hand.get(i));
+            setCardForImageView(hand.get(i), newImageViewForLayout(view));
         }
         for (int i = hand.size(); i < 2; i++) {
-            addCardToView(view, Card.playerBlank);
+            setCardForImageView(Card.playerBlank, newImageViewForLayout(view));
         }
     }
 
-    private void addCardToView(LinearLayout handView, Card card) {
+    private ImageView newImageViewForLayout(LinearLayout handView) {
         ImageView cardView = (ImageView) LayoutInflater.from(handView.getContext())
                 .inflate(R.layout.card_item, handView, false);
-
-        cardView = setImageForView(card, cardView);
 
         if (handView.getChildCount() == 0) {
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(cardView.getLayoutParams());
@@ -261,9 +280,10 @@ public class GameFragment extends Fragment implements PropertyChangeListener {
         }
 
         handView.addView(cardView);
+        return cardView;
     }
 
-    private ImageView setImageForView(Card card, ImageView imageView) {
+    private ImageView setCardForImageView(Card card, ImageView imageView) {
         String rank = card.rank();
         if (rank.equals("king") || rank.equals("queen") || rank.equals("jack")) {
             imageView.setImageResource(card.getImageID());
@@ -278,12 +298,16 @@ public class GameFragment extends Fragment implements PropertyChangeListener {
                 Log.e(GameFragment.class.toString(), "failed to parse svg: " + e.toString());
             }
         }
+        imageView.setTag(card.rank() + card.suit());
         return imageView;
     }
 
     @OnClick(R.id.button_double)
     public void onDouble() {
-        player.setBet(player.getBet() * 2);
+        int betChange = player.getBet();
+        player.setBet(player.getBet() + betChange);
+        game.setMoney(game.getMoney() - betChange);
+        player.setDoubled(true);
 
         player.getHand().draw();
         onStay();
@@ -291,19 +315,22 @@ public class GameFragment extends Fragment implements PropertyChangeListener {
 
     @OnClick(R.id.button_split)
     public void onSplit() {
-        /*
-        bet * 2
-        your bet -> total bet
-        store second card
-        replace second card with dealt card
-        recalc score
-        switchToSecondHand instead of endHand
-        endSplitHand
-         */
-    }
+        Player splitPlayer = new Player(game);
+        splitPlayer.setBet(player.getBet());
+        splitPlayer.setStatus(GameStatus.HITTING);
+        game.setMoney(game.getMoney() - player.getBet());
 
-    private void switchToWaiting() {
+        splitPlayer.getHand().add(player.getHand().remove(1));
+        player.getHand().draw();
+        splitPlayer.getHand().draw();
 
+        GameFragment splitFragment = new GameFragment();
+        Bundle args = new Bundle();
+        args.putSerializable("player", splitPlayer);
+        splitFragment.setArguments(args);
+        if (GameActivity.class.isInstance(getActivity())) {
+            ((GameActivity) getActivity()).addGameFragment(splitFragment);
+        }
     }
 
     private void endHand() {
@@ -313,6 +340,11 @@ public class GameFragment extends Fragment implements PropertyChangeListener {
         int dealerScore = game.getDealerHand().getScore(true);
         updateScoreViews(true);
         Resources resources = getResources();
+
+        if (player.isDoubled()) {
+            player.setBet(player.getBet() / 2);
+            player.setDoubled(false);
+        }
 
         if (playerScore > dealerScore && playerScore <= 21) {
             // player wins!
@@ -360,11 +392,9 @@ public class GameFragment extends Fragment implements PropertyChangeListener {
 
     @OnClick(R.id.button_play_again)
     public void playAgain() {
-        if (game.numPlayers() > 1) {
-            game.removePlayer(player, this);
-            // destroy fragment
-        } else {
-            game.setStatus(GameStatus.BETTING, player);
+        if (GameActivity.class.isInstance(getActivity())) {
+            GameActivity activity = (GameActivity) getActivity();
+            activity.resetGame();
         }
     }
 
@@ -390,16 +420,14 @@ public class GameFragment extends Fragment implements PropertyChangeListener {
                 GameStatus status = game.getStatus(player);
 
                 showDecisionView(status);
-//                updateDealerHandView(dealerHandView, game.getDealerHand(), status);
 
                 if (status == GameStatus.BETTING) {
+                    updateDealerHandView(dealerHandView, game.getDealerHand(), status);
                     switchToBetting();
                 }
                 if (status == GameStatus.HITTING) {
+                    updateDealerHandView(dealerHandView, game.getDealerHand(), status);
                     switchToHitting();
-                }
-                if (status == GameStatus.WAITING) {
-                    switchToWaiting();
                 }
                 if (status == GameStatus.SHOWDOWN) {
                     hitDealer();
@@ -412,15 +440,23 @@ public class GameFragment extends Fragment implements PropertyChangeListener {
     private void showDecisionView(GameStatus status) {
         if (status == GameStatus.BETTING) {
             hitAndStayView.setVisibility(View.GONE);
+            waitingView.setVisibility(View.GONE);
             playAgainView.setVisibility(View.GONE);
             betDecisionView.setVisibility(View.VISIBLE);
         } else if (status == GameStatus.HITTING) {
             betDecisionView.setVisibility(View.GONE);
+            waitingView.setVisibility(View.GONE);
             playAgainView.setVisibility(View.GONE);
             hitAndStayView.setVisibility(View.VISIBLE);
+        } else if (status == GameStatus.WAITING) {
+            betDecisionView.setVisibility(View.GONE);
+            hitAndStayView.setVisibility(View.GONE);
+            playAgainView.setVisibility(View.GONE);
+            waitingView.setVisibility(View.VISIBLE);
         } else if (status == GameStatus.SHOWDOWN) {
             betDecisionView.setVisibility(View.GONE);
             hitAndStayView.setVisibility(View.GONE);
+            waitingView.setVisibility(View.GONE);
             playAgainView.setVisibility(View.VISIBLE);
         }
     }

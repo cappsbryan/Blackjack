@@ -32,4 +32,5 @@
     <string name="player_initial_score">0</string>
     <string name="your_money_label">"Your money: "</string>
     <string name="main_activity_logo_description">app logo</string>
+    <string name="waiting">Waiting for all split hands to finish.</string>
 </resources>

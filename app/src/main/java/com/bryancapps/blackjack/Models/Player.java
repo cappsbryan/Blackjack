@@ -4,18 +4,22 @@ import com.bryancapps.blackjack.Game;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by bryancapps on 7/3/16.
  */
-public class Player implements PropertyChangeListener {
+public class Player implements PropertyChangeListener, Serializable {
     private final List<PropertyChangeListener> listeners = new ArrayList<>();
-    private Hand hand;
+    private final Hand hand;
     private int bet;
+    private boolean doubled;
+    private GameStatus gameStatus;
 
     public Player(Game game) {
+        game.addPlayer(this);
         hand = new Hand(game.getDeck());
         bet = 0;
 
@@ -44,9 +48,19 @@ public class Player implements PropertyChangeListener {
         return hand;
     }
 
-    private void notifyListeners(Object object, String property, String oldValue, String newValue) {
+    public GameStatus getStatus() {
+        return gameStatus;
+    }
+
+    public void setStatus(GameStatus status) {
+        GameStatus oldValue = this.gameStatus;
+        this.gameStatus = status;
+        notifyListeners(this, "status", oldValue, this.gameStatus);
+    }
+
+    private void notifyListeners(Object object, String property, Object oldValue, Object newValue) {
         for (PropertyChangeListener name : listeners) {
-            name.propertyChange(new PropertyChangeEvent(this, property, oldValue, newValue));
+            name.propertyChange(new PropertyChangeEvent(object, property, oldValue, newValue));
         }
     }
 
@@ -54,9 +68,26 @@ public class Player implements PropertyChangeListener {
         listeners.add(newListener);
     }
 
+    public void removeChangeListener(PropertyChangeListener listener) {
+        listeners.remove(listener);
+    }
+
     @Override
     public void propertyChange(PropertyChangeEvent event) {
-        notifyListeners(this, "player hand", event.getOldValue().toString(),
-                event.getNewValue().toString());
+        if (event.getSource() instanceof Hand) {
+            notifyListeners(this, "player hand",
+                    event.getOldValue(), event.getNewValue());
+        } else {
+            notifyListeners(event.getSource(), event.getPropertyName(),
+                    event.getOldValue(), event.getNewValue());
+        }
+    }
+
+    public boolean isDoubled() {
+        return doubled;
+    }
+
+    public void setDoubled(boolean doubled) {
+        this.doubled = doubled;
     }
 }
