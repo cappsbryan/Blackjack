@@ -42,6 +42,10 @@ public class Game implements PropertyChangeListener {
         return players;
     }
 
+    public void clearPlayers() {
+        players.clear();
+    }
+
     public GameStatus getStatus(Player player) {
         return player.getStatus();
     }
@@ -57,7 +61,7 @@ public class Game implements PropertyChangeListener {
         }
     }
 
-    public void reset() {
+    public void resetForNewHand() {
         if (getMoney() <= 0) {
             setMoney(1000);
         }

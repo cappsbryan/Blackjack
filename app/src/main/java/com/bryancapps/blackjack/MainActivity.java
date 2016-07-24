@@ -12,6 +12,10 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Game.getInstance().clearPlayers();
+        Game.getInstance().getDealerHand().clear();
+        Game.getInstance().getDeck().reset();
     }
 
     public void play(View view) {

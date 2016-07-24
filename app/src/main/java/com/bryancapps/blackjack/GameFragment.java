@@ -122,7 +122,7 @@ public class GameFragment extends Fragment implements PropertyChangeListener {
     }
 
     private void switchToBetting() {
-        game.reset();
+        game.resetForNewHand();
         updateDealerHandView(dealerHandView, game.getDealerHand(), GameStatus.BETTING);
         player.reset();
         game.setMoney(game.getMoney() - player.getBet());
