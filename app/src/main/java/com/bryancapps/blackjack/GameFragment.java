@@ -190,6 +190,9 @@ public class GameFragment extends Fragment implements PropertyChangeListener {
         if (player.getHand().isSplittable()) {
             splitButton.setEnabled(true);
         }
+
+        checkBlackjack(player.getHand());
+        checkBlackjack(game.getDealerHand());
     }
 
     private void checkBlackjack(Hand hand) {
@@ -281,8 +284,8 @@ public class GameFragment extends Fragment implements PropertyChangeListener {
     }
 
     private ImageView setCardForImageView(Card card, ImageView imageView) {
-        String rank = card.rank();
-        if (rank.equals("king") || rank.equals("queen") || rank.equals("jack")) {
+        Card.Rank rank = card.rank();
+        if (rank == Card.Rank.KING || rank == Card.Rank.QUEEN || rank == Card.Rank.JACK) {
             imageView.setImageResource(card.getImageID());
 
         } else {
@@ -295,7 +298,7 @@ public class GameFragment extends Fragment implements PropertyChangeListener {
                 Log.e(GameFragment.class.toString(), "failed to parse svg: " + e.toString());
             }
         }
-        imageView.setTag(card.rank() + card.suit());
+        imageView.setTag(card.rank().toString() + card.suit().toString());
         return imageView;
     }
 
@@ -393,12 +396,10 @@ public class GameFragment extends Fragment implements PropertyChangeListener {
                 updatePlayerHandView(playerHandView, player.getHand());
                 updateScoreViews(game.getStatus(player) == GameStatus.SHOWDOWN);
                 setButtonsEnabled();
-                checkBlackjack(player.getHand());
                 break;
             case "dealer hand":
                 updateDealerHandView(dealerHandView, game.getDealerHand(), game.getStatus(player));
                 updateScoreViews(game.getStatus(player) == GameStatus.SHOWDOWN);
-                checkBlackjack(game.getDealerHand());
                 break;
             case "bet":
                 setBetViews(player.getBet());

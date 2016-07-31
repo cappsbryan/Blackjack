@@ -3,6 +3,7 @@ package com.bryancapps.blackjack.Models;
 import com.bryancapps.blackjack.R;
 
 import java.io.Serializable;
+import java.util.Random;
 
 /**
  * Representation of a standard playing card
@@ -10,73 +11,106 @@ import java.io.Serializable;
  * Created by bryancapps on 8/12/15.
  */
 public class Card implements Serializable {
-    public final static Card dealerBlank = new Card(-1);
-    public final static Card playerBlank = new Card(-2);
-    private final static int[] IMAGE_IDS = {R.raw.ace_of_clubs, R.raw.ace_of_diamonds, R.raw.ace_of_hearts, R.raw.ace_of_spades, R.raw.two_of_clubs, R.raw.two_of_diamonds, R.raw.two_of_hearts, R.raw.two_of_spades, R.raw.three_of_clubs, R.raw.three_of_diamonds, R.raw.three_of_hearts, R.raw.three_of_spades, R.raw.four_of_clubs, R.raw.four_of_diamonds, R.raw.four_of_hearts, R.raw.four_of_spades, R.raw.five_of_clubs, R.raw.five_of_diamonds, R.raw.five_of_hearts, R.raw.five_of_spades, R.raw.six_of_clubs, R.raw.six_of_diamonds, R.raw.six_of_hearts, R.raw.six_of_spades, R.raw.seven_of_clubs, R.raw.seven_of_diamonds, R.raw.seven_of_hearts, R.raw.seven_of_spades, R.raw.eight_of_clubs, R.raw.eight_of_diamonds, R.raw.eight_of_hearts, R.raw.eight_of_spades, R.raw.nine_of_clubs, R.raw.nine_of_diamonds, R.raw.nine_of_hearts, R.raw.nine_of_spades, R.raw.ten_of_clubs, R.raw.ten_of_diamonds, R.raw.ten_of_hearts, R.raw.ten_of_spades, R.drawable.jack_of_clubs, R.drawable.jack_of_diamonds, R.drawable.jack_of_hearts, R.drawable.jack_of_spades, R.drawable.queen_of_clubs, R.drawable.queen_of_diamonds, R.drawable.queen_of_hearts, R.drawable.queen_of_spades, R.drawable.king_of_clubs, R.drawable.king_of_diamonds, R.drawable.king_of_hearts, R.drawable.king_of_spades};
-    private final int id;
+    public final static Card dealerBlank = new Card(Rank.BLANK, Suit.DEALER);
+    public final static Card playerBlank = new Card(Rank.BLANK, Suit.PLAYER);
 
-    public Card(int cardId) {
-        id = cardId;
+    private final static int[] CLUBS_IDS = {R.raw.ace_of_clubs, R.raw.two_of_clubs, R.raw.three_of_clubs, R.raw.four_of_clubs, R.raw.five_of_clubs, R.raw.six_of_clubs, R.raw.seven_of_clubs, R.raw.eight_of_clubs, R.raw.nine_of_clubs, R.raw.ten_of_clubs, R.drawable.jack_of_clubs, R.drawable.queen_of_clubs, R.drawable.king_of_clubs};
+    private final static int[] DIAMONDS_IDS = {R.raw.ace_of_diamonds, R.raw.two_of_diamonds, R.raw.three_of_diamonds, R.raw.four_of_diamonds, R.raw.five_of_diamonds, R.raw.six_of_diamonds, R.raw.seven_of_diamonds, R.raw.eight_of_diamonds, R.raw.nine_of_diamonds, R.raw.ten_of_diamonds, R.drawable.jack_of_diamonds, R.drawable.queen_of_diamonds, R.drawable.king_of_diamonds};
+    private final static int[] HEARTS_IDS = {R.raw.ace_of_hearts, R.raw.two_of_hearts, R.raw.three_of_hearts, R.raw.four_of_hearts, R.raw.five_of_hearts, R.raw.six_of_hearts, R.raw.seven_of_hearts, R.raw.eight_of_hearts, R.raw.nine_of_hearts, R.raw.ten_of_hearts, R.drawable.jack_of_hearts, R.drawable.queen_of_hearts, R.drawable.king_of_hearts};
+    private final static int[] SPADES_IDS = {R.raw.ace_of_spades, R.raw.two_of_spades, R.raw.three_of_spades, R.raw.four_of_spades, R.raw.five_of_spades, R.raw.six_of_spades, R.raw.seven_of_spades, R.raw.eight_of_spades, R.raw.nine_of_spades, R.raw.ten_of_spades, R.drawable.jack_of_spades, R.drawable.queen_of_spades, R.drawable.king_of_spades};
+
+    private Rank rank;
+    private Suit suit;
+
+    public Card(Rank rank, Suit suit) {
+        this.rank = rank;
+        this.suit = suit;
     }
 
-    public int getId() {
-        return id;
+    public Rank rank() {
+        return rank;
     }
 
-    public String rank() {
-        if (this.equals(playerBlank) || this.equals(dealerBlank)) {
-            return "blank";
-        }
-        if (id >= 0 && id < 4) {
-            return "ace";
-        } else if (id >= 48) {
-            return "king";
-        } else if (id >= 44 && id < 48) {
-            return "queen";
-        } else if (id >= 40 && id < 44) {
-            return "jack";
-        } else {
-            return String.valueOf((id / 4) + 1);
-        }
-    }
-
-    public String suit() {
-        if (this.equals(playerBlank)) return "player";
-        if (this.equals(dealerBlank)) return "dealer";
-
-        int remainder = id % 4;
-        if (remainder == 0) {
-            return "clubs";
-        } else if (remainder == 1) {
-            return "diamonds";
-        } else if (remainder == 2) {
-            return "hearts";
-        } else {
-            return "spades";
-        }
+    public Suit suit() {
+        return suit;
     }
 
     public int value() {
-        if (id < 0 || id >= 52) {
-            return 0;
-        }
-        if (id < 4) {
-            // card is an ace and should be counted as 11 or 1
-            return 1;
-        } else if (id > 35) {
-            // card is a king, queen, jack, or ten and should be counted as 10
-            return 10;
-        } else {
-            return (id / 4) + 1;
+        switch (rank) {
+            case ACE:
+                return 1;
+            case TWO:
+                return 2;
+            case THREE:
+                return 3;
+            case FOUR:
+                return 4;
+            case FIVE:
+                return 5;
+            case SIX:
+                return 6;
+            case SEVEN:
+                return 7;
+            case EIGHT:
+                return 8;
+            case NINE:
+                return 9;
+            case TEN:
+            case JACK:
+            case QUEEN:
+            case KING:
+                return 10;
+            default:
+                return 0;
         }
     }
 
     public int getImageID() {
-        if (id == -1) {
-            return R.raw.blue_back;
-        } else if (id == -2) {
-            return R.raw.red_back;
+        int[] array;
+        switch (suit) {
+            case CLUBS:
+                array = CLUBS_IDS;
+                break;
+            case DIAMONDS:
+                array = DIAMONDS_IDS;
+                break;
+            case HEARTS:
+                array = HEARTS_IDS;
+                break;
+            case SPADES:
+                array = SPADES_IDS;
+                break;
+            case PLAYER:
+                return R.raw.red_back;
+            case DEALER:
+                return R.raw.blue_back;
+            default:
+                return 0;
         }
-        return IMAGE_IDS[id];
+        return array[rank.ordinal()];
+    }
+
+    public enum Rank {
+        ACE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN, JACK, QUEEN, KING, BLANK;
+
+        private static final Rank[] VALUES = values();
+        private static final int SIZE = VALUES.length - 1;
+        private static final Random RANDOM = new Random();
+
+        public static Rank randomRank() {
+            return VALUES[RANDOM.nextInt(SIZE)];
+        }
+    }
+
+    public enum Suit {
+        CLUBS, DIAMONDS, HEARTS, SPADES, PLAYER, DEALER;
+
+        private static final Suit[] VALUES = values();
+        private static final int SIZE = VALUES.length - 2;
+        private static final Random RANDOM = new Random();
+
+        public static Suit randomSuit() {
+            return VALUES[RANDOM.nextInt(SIZE)];
+        }
     }
 }

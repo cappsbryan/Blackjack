@@ -21,8 +21,8 @@ public class Hand implements Serializable {
         this.deck = deck;
     }
 
-    public void add(int cardId) {
-        add(new Card(cardId));
+    public void add(Card.Rank rank, Card.Suit suit) {
+        add(new Card(rank, suit));
     }
 
     public void add(Card card) {
