@@ -142,13 +142,13 @@ public class Game implements PropertyChangeListener {
         int playerScore = player.getHand().getScore(true);
         int dealerScore = getDealerHand().getScore(true);
 
-        if (playerScore == 21 && player.getHand().size() == 2) {
-            // player has a blackjack!
-            return GameOutcome.PLAYER_BLACKJACK;
-        } else if (dealerScore == playerScore && dealerScore <= 21
+        if (dealerScore == playerScore && dealerScore <= 21
                 && getDealerHand().size() <= player.getHand().size()) {
             // push
             return GameOutcome.PUSH;
+        } else if (playerScore == 21 && player.getHand().size() == 2) {
+            // player has a blackjack!
+            return GameOutcome.PLAYER_BLACKJACK;
         } else if (dealerScore == 21 && getDealerHand().size() == 2) {
             // dealer has a blackjack
             return GameOutcome.DEALER_BLACKJACK;

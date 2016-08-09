@@ -23,7 +23,6 @@ public class HandTest {
     public void testDrawUpToSeventeen() {
         for (int i = 0; i < 1000; i++) {
             testHand.drawUpToSeventeen();
-            System.out.println("score: " + testHand.getScore(true));
             int minScore = 17;
             int maxScore = 26;
             assertTrue(testHand.getScore(true) <= maxScore && testHand.getScore(true) >= minScore);
