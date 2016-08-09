@@ -42,9 +42,9 @@ public class CardFlip extends Transition {
     public Animator createAnimator(ViewGroup sceneRoot, TransitionValues startValues, final TransitionValues endValues) {
         if (startValues == null || endValues == null
                 || startValues.values.get("image tag") == null
-                || !((String) startValues.values.get("image tag")).contains("blank")
+                || !((String) startValues.values.get("image tag")).contains("BLANK")
                 || endValues.values.get("image tag") == null
-                || ((String) endValues.values.get("image tag")).contains("blank")) {
+                || ((String) endValues.values.get("image tag")).contains("BLANK")) {
             return null;
         }
 

@@ -120,6 +120,55 @@ public class Game implements PropertyChangeListener {
         players.remove(player);
     }
 
+    public long determineWinnings(Player player) {
+        switch (determineOutcome(player)) {
+            case PLAYER_BLACKJACK:
+                return Math.round(player.getBet() * 2.5);
+            case PLAYER_WIN:
+                return player.getBet() * 2;
+            case DEALER_BUST:
+                return player.getBet() * 2;
+            case PUSH:
+                return player.getBet();
+            case DEALER_BLACKJACK:
+            case DEALER_WIN:
+            case PLAYER_BUST:
+            default:
+                return 0;
+        }
+    }
+
+    public GameOutcome determineOutcome(Player player) {
+        int playerScore = player.getHand().getScore(true);
+        int dealerScore = getDealerHand().getScore(true);
+
+        if (playerScore == 21 && player.getHand().size() == 2) {
+            // player has a blackjack!
+            return GameOutcome.PLAYER_BLACKJACK;
+        } else if (dealerScore == playerScore && dealerScore <= 21
+                && getDealerHand().size() <= player.getHand().size()) {
+            // push
+            return GameOutcome.PUSH;
+        } else if (dealerScore == 21 && getDealerHand().size() == 2) {
+            // dealer has a blackjack
+            return GameOutcome.DEALER_BLACKJACK;
+        } else if (playerScore > dealerScore && playerScore <= 21) {
+            // player wins!
+            return GameOutcome.PLAYER_WIN;
+        } else if (playerScore <= 21 && dealerScore > 21) {
+            // dealer busts!
+            return GameOutcome.DEALER_BUST;
+        } else if (dealerScore > playerScore && dealerScore <= 21) {
+            // dealer wins
+            return GameOutcome.DEALER_WIN;
+        } else if (playerScore > 21) {
+            // player busts
+            return GameOutcome.PLAYER_BUST;
+        }
+        Log.e(getClass().getSimpleName(), "Error determining winner");
+        return GameOutcome.ERROR;
+    }
+
     private void notifyListeners(Object source, String property, Object oldValue, Object newValue) {
         for (PropertyChangeListener name : listeners) {
             name.propertyChange(new PropertyChangeEvent(source, property, oldValue, newValue));
@@ -143,53 +192,5 @@ public class Game implements PropertyChangeListener {
             notifyListeners(event.getSource(), event.getPropertyName(),
                     event.getOldValue(), event.getNewValue());
         }
-    }
-
-    public long determineWinnings(Player player) {
-        switch (determineOutcome(player)) {
-            case PLAYER_BLACKJACK:
-                return Math.round(player.getBet() * 2.5);
-            case PLAYER_WIN:
-                return player.getBet() * 2;
-            case DEALER_BUST:
-                return player.getBet() * 2;
-            case PUSH:
-                return player.getBet();
-            case DEALER_BLACKJACK:
-            case DEALER_WIN:
-            case PLAYER_BUST:
-            default:
-                return 0;
-        }
-    }
-
-    public GameOutcome determineOutcome(Player player) {
-        int playerScore = player.getHand().getScore(true);
-        int dealerScore = getDealerHand().getScore(true);
-
-        if (dealerScore == playerScore && dealerScore <= 21) {
-            // push
-            return GameOutcome.PUSH;
-        } else if (dealerScore == 21 && getDealerHand().size() == 2) {
-            // dealer has a blackjack
-            return GameOutcome.DEALER_BLACKJACK;
-        } else if (playerScore == 21 && player.getHand().size() == 2) {
-            // player has a blackjack!
-            return GameOutcome.PLAYER_BLACKJACK;
-        } else if (playerScore > dealerScore && playerScore <= 21) {
-            // player wins!
-            return GameOutcome.PLAYER_WIN;
-        } else if (playerScore <= 21 && dealerScore > 21) {
-            // dealer busts!
-            return GameOutcome.DEALER_BUST;
-        } else if (dealerScore > playerScore && dealerScore <= 21) {
-            // dealer wins
-            return GameOutcome.DEALER_WIN;
-        } else if (playerScore > 21) {
-            // player busts
-            return GameOutcome.PLAYER_BUST;
-        }
-        Log.e(getClass().getSimpleName(), "Error determining winner");
-        return GameOutcome.ERROR;
     }
 }

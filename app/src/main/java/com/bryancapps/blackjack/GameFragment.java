@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,10 @@ import com.bryancapps.blackjack.Models.Hand;
 import com.bryancapps.blackjack.Models.Player;
 import com.caverock.androidsvg.SVG;
 import com.caverock.androidsvg.SVGParseException;
+import com.transitionseverywhere.ChangeBounds;
+import com.transitionseverywhere.Slide;
+import com.transitionseverywhere.TransitionManager;
+import com.transitionseverywhere.TransitionSet;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -55,6 +60,7 @@ public class GameFragment extends Fragment implements PropertyChangeListener {
     @BindView(R.id.layout_player_hand) LinearLayout playerHandView;
 
     private Unbinder unbinder;
+    private TransitionSet transitionSet;
 
     private Game game;
     private Player player;
@@ -77,6 +83,13 @@ public class GameFragment extends Fragment implements PropertyChangeListener {
         game.addChangeListener(this);
         player.addChangeListener(this);
 
+        transitionSet = new TransitionSet()
+                .setOrdering(TransitionSet.ORDERING_SEQUENTIAL)
+                .addTransition(new TransitionSet()
+                        .setOrdering(TransitionSet.ORDERING_TOGETHER)
+                        .addTransition(new CardFlip())
+                        .addTransition(new ChangeBounds()))
+                .addTransition(new Slide(Gravity.RIGHT));
         currencyFormat = NumberFormat.getCurrencyInstance();
         currencyFormat.setMaximumFractionDigits(0);
     }
@@ -226,6 +239,7 @@ public class GameFragment extends Fragment implements PropertyChangeListener {
     }
 
     private void updateDealerHandView(LinearLayout layout, Hand hand, GameStatus status) {
+        TransitionManager.beginDelayedTransition(dealerHandView, transitionSet);
         if (status == GameStatus.BETTING) {
             layout.removeAllViews();
             setCardForImageView(Card.dealerBlank, newImageViewForLayout(layout));
@@ -250,6 +264,12 @@ public class GameFragment extends Fragment implements PropertyChangeListener {
     }
 
     private void updatePlayerHandView(LinearLayout view, Hand hand) {
+        TransitionManager.beginDelayedTransition(playerHandView, transitionSet);
+
+        if (hand.size() == 1) {
+            return;
+        }
+
         // remove any extra views
         if (view.getChildCount() > hand.size()) {
             int count = view.getChildCount() - hand.size();
