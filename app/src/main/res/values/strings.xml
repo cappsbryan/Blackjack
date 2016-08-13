@@ -33,4 +33,5 @@
     <string name="your_money_label">"Your money: "</string>
     <string name="main_activity_logo_description">app logo</string>
     <string name="waiting">Waiting for all split hands to finish.</string>
+    <string name="hand_outcome_error">Sorry, there was some kind of error :(</string>
 </resources>

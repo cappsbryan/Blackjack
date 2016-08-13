@@ -7,6 +7,7 @@ import com.bryancapps.blackjack.Models.GameOutcome;
 import com.bryancapps.blackjack.Models.GameStatus;
 import com.bryancapps.blackjack.Models.Hand;
 import com.bryancapps.blackjack.Models.Player;
+import com.bryancapps.blackjack.Models.TestDeck;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -25,7 +26,7 @@ public class Game implements PropertyChangeListener {
     private List<Player> players;
 
     private Game() {
-        deck = new Deck();
+        deck = new TestDeck();
         money = 0;
         dealerHand = new Hand(deck);
         players = new ArrayList<>();

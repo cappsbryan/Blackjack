@@ -414,6 +414,10 @@ public class GameFragment extends Fragment implements PropertyChangeListener {
                 text = resources.getString(R.string.player_blackjack) + (winnings - player.getBet()) + "!";
                 handOverTextView.setText(text);
                 break;
+            case DEALER_BLACKJACK:
+                text = resources.getString(R.string.dealer_blackjack) + player.getBet() + ".";
+                handOverTextView.setText(text);
+                break;
             case PLAYER_WIN:
                 text = resources.getString(R.string.player_wins) + (winnings - player.getBet()) + "!";
                 handOverTextView.setText(text);
@@ -429,6 +433,9 @@ public class GameFragment extends Fragment implements PropertyChangeListener {
             case PLAYER_BUST:
                 text = resources.getString(R.string.player_busts) + player.getBet() + ".";
                 handOverTextView.setText(text);
+            case ERROR:
+                handOverTextView.setText(R.string.hand_outcome_error);
+                break;
         }
 
         if (player.isDoubled()) {
