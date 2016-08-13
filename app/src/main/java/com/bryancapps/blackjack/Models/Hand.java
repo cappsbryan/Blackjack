@@ -36,17 +36,15 @@ public class Hand implements Serializable, Iterable<Card> {
         return cardsInHand.size();
     }
 
-    public Card draw() {
+    public void draw() {
         Card card = deck.deal();
         add(card);
-        return card;
     }
 
-    public int drawUpToSeventeen() {
+    public void drawUpToSeventeen() {
         while (getScore(true) < 17) {
             draw();
         }
-        return getScore(true);
     }
 
     public int getScore(boolean countFirstCard) {

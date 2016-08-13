@@ -4,9 +4,6 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- * Created by bryancapps on 7/27/16.
- */
 public class CardTest {
 
     @Test

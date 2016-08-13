@@ -8,9 +8,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by bryancapps on 7/3/16.
- */
 public class Player implements PropertyChangeListener, Serializable {
     private final List<PropertyChangeListener> listeners = new ArrayList<>();
     private final Hand hand;
@@ -28,10 +25,6 @@ public class Player implements PropertyChangeListener, Serializable {
 
     public void reset() {
         hand.clear();
-    }
-
-    public int getScore() {
-        return hand.getScore(true);
     }
 
     public long getBet() {

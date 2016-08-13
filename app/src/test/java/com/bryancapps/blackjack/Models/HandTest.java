@@ -7,7 +7,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertTrue;
 
 public class HandTest {
-    Hand testHand;
+    private Hand testHand;
 
     @Before
     public void setUp() {
@@ -15,7 +15,7 @@ public class HandTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         testHand.clear();
     }
 

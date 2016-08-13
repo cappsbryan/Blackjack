@@ -17,8 +17,8 @@ import java.util.List;
 
 
 public class GameActivity extends AppCompatActivity {
-    GameFragmentPagerAdapter adapter;
-    ViewPager pager;
+    private GameFragmentPagerAdapter adapter;
+    private ViewPager pager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,15 +66,10 @@ public class GameActivity extends AppCompatActivity {
 
     public void addGameFragment(GameFragment fragment) {
         adapter.add(fragment);
-//        pager.setCurrentItem(adapter.getCount() - 1);
-    }
-
-    public void removeFragment(int index) {
-        adapter.remove(index);
     }
 
     private class GameFragmentPagerAdapter extends FragmentStatePagerAdapter {
-        private List<GameFragment> fragments;
+        private final List<GameFragment> fragments;
 
         public GameFragmentPagerAdapter(FragmentManager fragmentManager) {
             super(fragmentManager);

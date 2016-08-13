@@ -13,25 +13,22 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- * Created by bryancapps on 7/30/16.
- */
 public class GameTest {
     private Game testGame;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         testGame = Game.getInstance();
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         testGame.resetForNewHand();
         testGame.clearPlayers();
     }
 
     @Test
-    public void testAddPlayer() throws Exception {
+    private void testAddPlayer() throws Exception {
         new Player(testGame);
         new Player(testGame);
         new Player(testGame);
@@ -83,7 +80,7 @@ public class GameTest {
     }
 
     @Test
-    public void testSetMoney() throws Exception {
+    private void testSetMoney() throws Exception {
         testGame.setMoney(24);
     }
 

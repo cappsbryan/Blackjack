@@ -15,10 +15,7 @@ import com.transitionseverywhere.TransitionValues;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by bryancapps on 7/17/16.
- */
-public class CardFlip extends Transition {
+class CardFlip extends Transition {
 
     private void capture(TransitionValues transitionValues) {
         if (transitionValues.view instanceof ImageView) {

@@ -18,8 +18,8 @@ public class Card implements Serializable {
     private final static int[] HEARTS_IDS = {R.raw.ace_of_hearts, R.raw.two_of_hearts, R.raw.three_of_hearts, R.raw.four_of_hearts, R.raw.five_of_hearts, R.raw.six_of_hearts, R.raw.seven_of_hearts, R.raw.eight_of_hearts, R.raw.nine_of_hearts, R.raw.ten_of_hearts, R.drawable.jack_of_hearts, R.drawable.queen_of_hearts, R.drawable.king_of_hearts};
     private final static int[] SPADES_IDS = {R.raw.ace_of_spades, R.raw.two_of_spades, R.raw.three_of_spades, R.raw.four_of_spades, R.raw.five_of_spades, R.raw.six_of_spades, R.raw.seven_of_spades, R.raw.eight_of_spades, R.raw.nine_of_spades, R.raw.ten_of_spades, R.drawable.jack_of_spades, R.drawable.queen_of_spades, R.drawable.king_of_spades};
 
-    private Rank rank;
-    private Suit suit;
+    private final Rank rank;
+    private final Suit suit;
 
     public Card(Rank rank, Suit suit) {
         this.rank = rank;
@@ -92,7 +92,8 @@ public class Card implements Serializable {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof Card) {
-            return rank.equals(((Card) obj).rank) && suit.equals(((Card) obj).suit);
+            Card card = (Card) obj;
+            return rank.equals(card.rank) && suit.equals(card.suit);
         } else {
             return false;
         }
@@ -109,10 +110,10 @@ public class Card implements Serializable {
     }
 
     public enum Rank {
-        ACE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN, JACK, QUEEN, KING, BLANK;
+        ACE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN, JACK, QUEEN, KING, BLANK
     }
 
     public enum Suit {
-        CLUBS, DIAMONDS, HEARTS, SPADES, PLAYER, DEALER;
+        CLUBS, DIAMONDS, HEARTS, SPADES, PLAYER, DEALER
     }
 }

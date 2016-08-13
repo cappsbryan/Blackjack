@@ -36,9 +36,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 
-/**
- * Created by bryancapps on 6/27/16.
- */
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class GameFragment extends Fragment implements PropertyChangeListener {
 
     @BindView(R.id.text_money) TextView moneyTextView;
@@ -182,17 +180,21 @@ public class GameFragment extends Fragment implements PropertyChangeListener {
             decrementBetButton.setEnabled(false);
         }
 
+        long betIncrement;
         if (game.getMoney() < 100 && game.getMoney() > 0) {
-            incrementBetButton.setText("+ $" + game.getMoney());
+            betIncrement = game.getMoney();
         } else {
-            incrementBetButton.setText("+ $100");
+            betIncrement = 100;
         }
+        incrementBetButton.setText(getString(R.string.increment_bet, betIncrement));
 
+        long betDecrement;
         if (player.getBet() < 100 && player.getBet() > 0) {
-            decrementBetButton.setText("- $" + player.getBet());
+            betDecrement = player.getBet();
         } else {
-            decrementBetButton.setText("- $100");
+            betDecrement = 100;
         }
+        decrementBetButton.setText(getString(R.string.decrement_bet, betDecrement));
     }
 
     private void setMoneyView(long money) {
@@ -333,7 +335,7 @@ public class GameFragment extends Fragment implements PropertyChangeListener {
         return cardView;
     }
 
-    private ImageView setCardForImageView(Card card, ImageView imageView) {
+    private void setCardForImageView(Card card, ImageView imageView) {
         Card.Rank rank = card.rank();
         if (rank == Card.Rank.KING || rank == Card.Rank.QUEEN || rank == Card.Rank.JACK) {
             imageView.setImageResource(card.getImageID());
@@ -349,7 +351,6 @@ public class GameFragment extends Fragment implements PropertyChangeListener {
             }
         }
         imageView.setTag(card.rank().toString() + card.suit().toString());
-        return imageView;
     }
 
     @OnClick(R.id.button_double)

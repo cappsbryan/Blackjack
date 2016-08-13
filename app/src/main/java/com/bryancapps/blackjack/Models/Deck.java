@@ -11,9 +11,9 @@ import java.util.Random;
  * Created by bryancapps on 8/4/15.
  */
 public class Deck implements Serializable {
-    private List<Card> drawnCards;
-    private Card.Rank[] ranks;
-    private Card.Suit[] suits;
+    private final List<Card> drawnCards;
+    private final Card.Rank[] ranks;
+    private final Card.Suit[] suits;
     private Random random;
 
     public Deck() {

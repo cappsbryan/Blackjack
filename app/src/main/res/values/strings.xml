@@ -11,9 +11,9 @@
     <string name="player_first_card_hint">Your first card</string>
     <string name="player_second_card_hint">Your second card</string>
     <string name="your_money">$1000</string>
-    <string name="decrement_bet">- $100</string>
+    <string name="decrement_bet">- $%d</string>
     <string name="zero_dollars">$0</string>
-    <string name="increment_bet">+ $100</string>
+    <string name="increment_bet">+ $%d</string>
     <string name="bet">Bet</string>
     <string name="stay">Stay</string>
     <string name="your_bet_label">Your bet:</string>

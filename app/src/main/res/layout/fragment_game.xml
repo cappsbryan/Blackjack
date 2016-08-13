@@ -166,8 +166,8 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:text="@string/decrement_bet"
-                    android:textSize="16sp"/>
+                    android:textSize="16sp"
+                    tools:text="- $ 100"/>
 
                 <TextView
                     android:id="@+id/text_bet"
@@ -175,18 +175,18 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:text="@string/zero_dollars"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textColor="@android:color/black"
-                    android:textSize="36sp"/>
+                    android:textSize="36sp"
+                    tools:text="@string/zero_dollars"/>
 
                 <Button
                     android:id="@+id/button_increment_bet"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:text="@string/increment_bet"
-                    android:textSize="16sp"/>
+                    android:textSize="16sp"
+                    tools:text="+ $100"/>
             </LinearLayout>
 
             <Button

@@ -14,16 +14,13 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by bryancapps on 7/3/16.
- */
 public class Game implements PropertyChangeListener {
     private static final Game ourInstance = new Game();
     private final List<PropertyChangeListener> listeners = new ArrayList<>();
+    private final List<Player> players;
     private long money;
     private Hand dealerHand;
     private Deck deck;
-    private List<Player> players;
 
     private Game() {
         deck = new TestDeck();

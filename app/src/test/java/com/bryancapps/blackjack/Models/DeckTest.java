@@ -10,11 +10,8 @@ import java.util.List;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-/**
- * Created by bryancapps on 7/30/16.
- */
 public class DeckTest {
-    Deck testDeck;
+    private Deck testDeck;
 
     @Before
     public void setUp() {
@@ -22,7 +19,7 @@ public class DeckTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         testDeck.reset();
     }
 
