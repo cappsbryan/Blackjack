@@ -411,27 +411,27 @@ public class GameFragment extends Fragment implements PropertyChangeListener {
                 handOverTextView.setText(R.string.push);
                 break;
             case PLAYER_BLACKJACK:
-                text = resources.getString(R.string.player_blackjack) + (winnings - player.getBet()) + "!";
+                text = String.format(resources.getString(R.string.player_blackjack), winnings - player.getBet());
                 handOverTextView.setText(text);
                 break;
             case DEALER_BLACKJACK:
-                text = resources.getString(R.string.dealer_blackjack) + player.getBet() + ".";
+                text = String.format(resources.getString(R.string.dealer_blackjack), player.getBet());
                 handOverTextView.setText(text);
                 break;
             case PLAYER_WIN:
-                text = resources.getString(R.string.player_wins) + (winnings - player.getBet()) + "!";
+                text = String.format(resources.getString(R.string.player_wins), winnings - player.getBet());
                 handOverTextView.setText(text);
                 break;
             case DEALER_BUST:
-                text = resources.getString(R.string.dealer_busts) + (winnings - player.getBet()) + "!";
+                text = String.format(resources.getString(R.string.dealer_busts), winnings - player.getBet());
                 handOverTextView.setText(text);
                 break;
             case DEALER_WIN:
-                text = resources.getString(R.string.dealer_wins) + player.getBet() + ".";
+                text = String.format(resources.getString(R.string.dealer_wins), player.getBet());
                 handOverTextView.setText(text);
                 break;
             case PLAYER_BUST:
-                text = resources.getString(R.string.player_busts) + player.getBet() + ".";
+                text = String.format(resources.getString(R.string.player_busts), player.getBet());
                 handOverTextView.setText(text);
             case ERROR:
                 handOverTextView.setText(R.string.hand_outcome_error);
