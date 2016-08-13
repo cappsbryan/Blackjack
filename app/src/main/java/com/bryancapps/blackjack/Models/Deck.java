@@ -3,6 +3,7 @@ package com.bryancapps.blackjack.Models;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Representation of a deck of playing cards
@@ -11,9 +12,15 @@ import java.util.List;
  */
 public class Deck implements Serializable {
     private List<Card> drawnCards;
+    private Card.Rank[] ranks;
+    private Card.Suit[] suits;
+    private Random random;
 
     public Deck() {
         drawnCards = new ArrayList<>();
+        ranks = Card.Rank.values();
+        suits = Card.Suit.values();
+        random = new Random();
         reset();
     }
 
@@ -25,8 +32,8 @@ public class Deck implements Serializable {
     public Card deal() {
         Card card;
         do {
-            Card.Rank rank = Card.Rank.randomRank();
-            Card.Suit suit = Card.Suit.randomSuit();
+            Card.Rank rank = ranks[random.nextInt(ranks.length - 1)];
+            Card.Suit suit = suits[random.nextInt(suits.length - 2)];
             card = new Card(rank, suit);
         } while (drawnCards.contains(card));
 
@@ -36,5 +43,6 @@ public class Deck implements Serializable {
 
     public void reset() {
         drawnCards.clear();
+        random = new Random();
     }
 }

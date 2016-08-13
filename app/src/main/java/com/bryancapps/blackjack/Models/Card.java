@@ -3,7 +3,6 @@ package com.bryancapps.blackjack.Models;
 import com.bryancapps.blackjack.R;
 
 import java.io.Serializable;
-import java.util.Random;
 
 /**
  * Representation of a standard playing card
@@ -90,27 +89,30 @@ public class Card implements Serializable {
         return array[rank.ordinal()];
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Card) {
+            return rank.equals(((Card) obj).rank) && suit.equals(((Card) obj).suit);
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 17;
+
+        result = 31 * result + rank.hashCode();
+        result = 31 * result + suit.hashCode();
+
+        return result;
+    }
+
     public enum Rank {
         ACE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN, JACK, QUEEN, KING, BLANK;
-
-        private static final Rank[] VALUES = values();
-        private static final int SIZE = VALUES.length - 1;
-        private static final Random RANDOM = new Random();
-
-        public static Rank randomRank() {
-            return VALUES[RANDOM.nextInt(SIZE)];
-        }
     }
 
     public enum Suit {
         CLUBS, DIAMONDS, HEARTS, SPADES, PLAYER, DEALER;
-
-        private static final Suit[] VALUES = values();
-        private static final int SIZE = VALUES.length - 2;
-        private static final Random RANDOM = new Random();
-
-        public static Suit randomSuit() {
-            return VALUES[RANDOM.nextInt(SIZE)];
-        }
     }
 }
