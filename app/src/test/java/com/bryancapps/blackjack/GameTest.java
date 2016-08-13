@@ -128,8 +128,8 @@ public class GameTest {
         blackjackPlayer.getHand().add(Card.Rank.KING, Card.Suit.SPADES);
 
         Hand blackjackDealerHand = new Hand(testGame.getDeck());
-        blackjackDealerHand.add(Card.Rank.ACE, Card.Suit.HEARTS);
-        blackjackDealerHand.add(Card.Rank.QUEEN, Card.Suit.HEARTS);
+        blackjackDealerHand.add(Card.Rank.ACE, Card.Suit.DIAMONDS);
+        blackjackDealerHand.add(Card.Rank.TEN, Card.Suit.HEARTS);
         testGame.setDealerHand(blackjackDealerHand);
 
         // player blackjack + dealer blackjack = push
@@ -161,9 +161,12 @@ public class GameTest {
         assertEquals(600, testGame.determineWinnings(twentyPlayer));
 
         testGame.setDealerHand(blackjackDealerHand);
+        Player eightPlayer = new Player(testGame);
+        eightPlayer.getHand().add(Card.Rank.SIX, Card.Suit.CLUBS);
+        eightPlayer.getHand().add(Card.Rank.TWO, Card.Suit.DIAMONDS);
 
-        // player 20 + dealer blackjack = dealer blackjack / player loses
-        assertEquals(0, testGame.determineWinnings(twentyPlayer));
+        // player 8 + dealer blackjack = dealer blackjack / player loses
+        assertEquals(0, testGame.determineWinnings(eightPlayer));
 
         testGame.setDealerHand(seventeenDealerHand);
 
@@ -194,8 +197,8 @@ public class GameTest {
         blackjackPlayer.getHand().add(Card.Rank.KING, Card.Suit.SPADES);
 
         Hand blackjackDealerHand = new Hand(testGame.getDeck());
-        blackjackDealerHand.add(Card.Rank.ACE, Card.Suit.HEARTS);
-        blackjackDealerHand.add(Card.Rank.QUEEN, Card.Suit.HEARTS);
+        blackjackDealerHand.add(Card.Rank.ACE, Card.Suit.DIAMONDS);
+        blackjackDealerHand.add(Card.Rank.TEN, Card.Suit.HEARTS);
         testGame.setDealerHand(blackjackDealerHand);
 
         // player blackjack + dealer blackjack = push
@@ -227,9 +230,12 @@ public class GameTest {
         assertEquals(GameOutcome.PLAYER_WIN, testGame.determineOutcome(twentyPlayer));
 
         testGame.setDealerHand(blackjackDealerHand);
+        Player eightPlayer = new Player(testGame);
+        eightPlayer.getHand().add(Card.Rank.SIX, Card.Suit.CLUBS);
+        eightPlayer.getHand().add(Card.Rank.TWO, Card.Suit.DIAMONDS);
 
-        // player 20 + dealer blackjack = dealer blackjack / player loses
-        assertEquals(GameOutcome.DEALER_BLACKJACK, testGame.determineOutcome(twentyPlayer));
+        // player 8 + dealer blackjack = dealer blackjack / player loses
+        assertEquals(GameOutcome.DEALER_BLACKJACK, testGame.determineOutcome(eightPlayer));
 
         testGame.setDealerHand(seventeenDealerHand);
 

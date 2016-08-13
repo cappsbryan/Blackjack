@@ -138,22 +138,40 @@ public class GameFragment extends Fragment implements PropertyChangeListener {
         game.resetForNewHand();
         updateDealerHandView(dealerHandView, game.getDealerHand(), GameStatus.BETTING);
         player.reset();
+
+        if (player.getBet() > game.getMoney()) {
+            player.setBet(game.getMoney());
+        }
         game.setMoney(game.getMoney() - player.getBet());
     }
 
     @OnClick(R.id.button_decrement_bet)
     public void decrementBet() {
-        player.setBet(player.getBet() - 100);
-        game.setMoney(game.getMoney() + 100);
+        long betDecrease;
+        if (player.getBet() < 100) {
+            betDecrease = player.getBet();
+        } else {
+            betDecrease = 100;
+        }
+
+        player.setBet(player.getBet() - betDecrease);
+        game.setMoney(game.getMoney() + betDecrease);
     }
 
     @OnClick(R.id.button_increment_bet)
     public void incrementBet() {
-        player.setBet(player.getBet() + 100);
-        game.setMoney(game.getMoney() - 100);
+        long betIncrease;
+        if (game.getMoney() < 100) {
+            betIncrease = game.getMoney();
+        } else {
+            betIncrease = 100;
+        }
+
+        player.setBet(player.getBet() + betIncrease);
+        game.setMoney(game.getMoney() - betIncrease);
     }
 
-    private void setBetViews(int bet) {
+    private void setBetViews(long bet) {
         betTextView.setText(currencyFormat.format(bet));
         bigBetView.setText(currencyFormat.format(bet));
         if (bet > 0) {
@@ -162,6 +180,18 @@ public class GameFragment extends Fragment implements PropertyChangeListener {
         } else {
             betButton.setEnabled(false);
             decrementBetButton.setEnabled(false);
+        }
+
+        if (game.getMoney() < 100 && game.getMoney() > 0) {
+            incrementBetButton.setText("+ $" + game.getMoney());
+        } else {
+            incrementBetButton.setText("+ $100");
+        }
+
+        if (player.getBet() < 100 && player.getBet() > 0) {
+            decrementBetButton.setText("- $" + player.getBet());
+        } else {
+            decrementBetButton.setText("- $100");
         }
     }
 
@@ -324,7 +354,7 @@ public class GameFragment extends Fragment implements PropertyChangeListener {
 
     @OnClick(R.id.button_double)
     public void onDouble() {
-        int betChange = player.getBet();
+        long betChange = player.getBet();
         player.setBet(player.getBet() + betChange);
         game.setMoney(game.getMoney() - betChange);
         player.setDoubled(true);
@@ -351,9 +381,21 @@ public class GameFragment extends Fragment implements PropertyChangeListener {
         if (GameActivity.class.isInstance(getActivity())) {
             ((GameActivity) getActivity()).addGameFragment(splitFragment);
         }
+
+        checkBlackjack(player.getHand());
+        splitFragment.checkBlackjack(splitPlayer.getHand());
     }
 
     private void endHand() {
+        Log.d(getClass().getSimpleName(), "dealer hand:");
+        for (Card dealerCard : game.getDealerHand()) {
+            Log.d(getClass().getSimpleName(), dealerCard.rank() + " of " + dealerCard.suit());
+        }
+        Log.d(getClass().getSimpleName(), "player hand:");
+        for (Card playerCard : player.getHand()) {
+            Log.d(getClass().getSimpleName(), playerCard.rank() + " of " + playerCard.suit());
+        }
+
         // gets called by the listener after status is set to showdown
 
         updateScoreViews(true);
@@ -421,10 +463,8 @@ public class GameFragment extends Fragment implements PropertyChangeListener {
                 updateDealerHandView(dealerHandView, game.getDealerHand(), game.getStatus(player));
                 updateScoreViews(game.getStatus(player) == GameStatus.SHOWDOWN);
                 break;
-            case "bet":
-                setBetViews(player.getBet());
-                break;
             case "money":
+                setBetViews(player.getBet());
                 setMoneyView(game.getMoney());
                 break;
             case "status":

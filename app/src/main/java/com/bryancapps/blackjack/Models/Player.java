@@ -14,7 +14,7 @@ import java.util.List;
 public class Player implements PropertyChangeListener, Serializable {
     private final List<PropertyChangeListener> listeners = new ArrayList<>();
     private final Hand hand;
-    private int bet;
+    private long bet;
     private boolean doubled;
     private GameStatus gameStatus;
 
@@ -34,11 +34,11 @@ public class Player implements PropertyChangeListener, Serializable {
         return hand.getScore(true);
     }
 
-    public int getBet() {
+    public long getBet() {
         return bet;
     }
 
-    public void setBet(int bet) {
+    public void setBet(long bet) {
         String oldValue = String.valueOf(this.bet);
         this.bet = bet;
         notifyListeners(this, "bet", oldValue, String.valueOf(this.bet));

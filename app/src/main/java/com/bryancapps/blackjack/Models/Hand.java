@@ -4,6 +4,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -11,7 +12,7 @@ import java.util.List;
  * <p/>
  * Created by bryancapps on 6/19/15.
  */
-public class Hand implements Serializable {
+public class Hand implements Serializable, Iterable<Card> {
     private final ArrayList<Card> cardsInHand;
     private final Deck deck;
     private final List<PropertyChangeListener> listeners = new ArrayList<>();
@@ -90,6 +91,11 @@ public class Hand implements Serializable {
         ArrayList<Card> oldValue = cardsInHand;
         cardsInHand.clear();
         notifyListeners("cards", oldValue, cardsInHand);
+    }
+
+    @Override
+    public Iterator<Card> iterator() {
+        return cardsInHand.iterator();
     }
 
     private void notifyListeners(String propertyName, Object oldValue, Object newValue) {
