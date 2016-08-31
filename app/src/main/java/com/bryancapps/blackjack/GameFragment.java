@@ -434,6 +434,7 @@ public class GameFragment extends Fragment implements PropertyChangeListener {
             case PLAYER_BUST:
                 text = String.format(resources.getString(R.string.player_busts), player.getBet());
                 handOverTextView.setText(text);
+                break;
             case ERROR:
                 handOverTextView.setText(R.string.hand_outcome_error);
                 break;
