@@ -1,4 +1,4 @@
-package com.bryancapps.blackjack.Models;
+package com.bryancapps.blackjack.models;
 
 import org.junit.Test;
 
@@ -7,11 +7,11 @@ import static org.junit.Assert.assertEquals;
 public class CardTest {
 
     @Test
-    public void testConstructor() {
+    public void testCreate() {
         Card testCard;
         for (Card.Rank rank : Card.Rank.values()) {
             for (Card.Suit suit : Card.Suit.values()) {
-                testCard = new Card(rank, suit);
+                testCard = Card.create(rank, suit);
                 assertEquals(rank, testCard.rank());
                 assertEquals(suit, testCard.suit());
             }
@@ -22,7 +22,7 @@ public class CardTest {
     public void testRank() throws Exception {
         Card testCard;
         for (Card.Rank rank : Card.Rank.values()) {
-            testCard = new Card(rank, Card.Suit.CLUBS);
+            testCard = Card.create(rank, Card.Suit.CLUBS);
             assertEquals(rank, testCard.rank());
         }
     }
@@ -31,26 +31,26 @@ public class CardTest {
     public void testSuit() throws Exception {
         Card testCard;
         for (Card.Suit suit : Card.Suit.values()) {
-            testCard = new Card(Card.Rank.ACE, suit);
+            testCard = Card.create(Card.Rank.ACE, suit);
             assertEquals(suit, testCard.suit());
         }
     }
 
     @Test
     public void testValue() throws Exception {
-        Card testA = new Card(Card.Rank.ACE, Card.Suit.CLUBS);
-        Card test2 = new Card(Card.Rank.TWO, Card.Suit.CLUBS);
-        Card test3 = new Card(Card.Rank.THREE, Card.Suit.CLUBS);
-        Card test4 = new Card(Card.Rank.FOUR, Card.Suit.CLUBS);
-        Card test5 = new Card(Card.Rank.FIVE, Card.Suit.CLUBS);
-        Card test6 = new Card(Card.Rank.SIX, Card.Suit.CLUBS);
-        Card test7 = new Card(Card.Rank.SEVEN, Card.Suit.CLUBS);
-        Card test8 = new Card(Card.Rank.EIGHT, Card.Suit.CLUBS);
-        Card test9 = new Card(Card.Rank.NINE, Card.Suit.CLUBS);
-        Card test10 = new Card(Card.Rank.TEN, Card.Suit.CLUBS);
-        Card testJ = new Card(Card.Rank.JACK, Card.Suit.CLUBS);
-        Card testQ = new Card(Card.Rank.QUEEN, Card.Suit.CLUBS);
-        Card testK = new Card(Card.Rank.KING, Card.Suit.CLUBS);
+        Card testA = Card.create(Card.Rank.ACE, Card.Suit.CLUBS);
+        Card test2 = Card.create(Card.Rank.TWO, Card.Suit.CLUBS);
+        Card test3 = Card.create(Card.Rank.THREE, Card.Suit.CLUBS);
+        Card test4 = Card.create(Card.Rank.FOUR, Card.Suit.CLUBS);
+        Card test5 = Card.create(Card.Rank.FIVE, Card.Suit.CLUBS);
+        Card test6 = Card.create(Card.Rank.SIX, Card.Suit.CLUBS);
+        Card test7 = Card.create(Card.Rank.SEVEN, Card.Suit.CLUBS);
+        Card test8 = Card.create(Card.Rank.EIGHT, Card.Suit.CLUBS);
+        Card test9 = Card.create(Card.Rank.NINE, Card.Suit.CLUBS);
+        Card test10 = Card.create(Card.Rank.TEN, Card.Suit.CLUBS);
+        Card testJ = Card.create(Card.Rank.JACK, Card.Suit.CLUBS);
+        Card testQ = Card.create(Card.Rank.QUEEN, Card.Suit.CLUBS);
+        Card testK = Card.create(Card.Rank.KING, Card.Suit.CLUBS);
 
         assertEquals(1, testA.value());
         assertEquals(2, test2.value());

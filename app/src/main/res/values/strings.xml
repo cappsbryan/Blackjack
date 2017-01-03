@@ -10,10 +10,13 @@
     <string name="player_text">Your hand:</string>
     <string name="player_first_card_hint">Your first card</string>
     <string name="player_second_card_hint">Your second card</string>
-    <string name="your_money">$1000</string>
+    <string name="your_money">$%d</string>
     <string name="decrement_bet">- $%d</string>
+    <string name="initial_decrement_bet">- $100</string>
     <string name="zero_dollars">$0</string>
+    <string name="current_bet">$%d</string>
     <string name="increment_bet">+ $%d</string>
+    <string name="initial_increment_bet">+ $100</string>
     <string name="bet">Bet</string>
     <string name="stay">Stay</string>
     <string name="your_bet_label">Your bet:</string>

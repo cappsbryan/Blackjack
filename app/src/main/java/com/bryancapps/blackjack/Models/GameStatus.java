@@ -1,4 +1,4 @@
-package com.bryancapps.blackjack.Models;
+package com.bryancapps.blackjack.models;
 
 public enum GameStatus {
     BETTING, HITTING, WAITING, SHOWDOWN

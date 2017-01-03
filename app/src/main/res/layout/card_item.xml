@@ -4,7 +4,7 @@
            android:id="@+id/card_image"
            android:layout_width="wrap_content"
            android:layout_height="match_parent"
-           android:layout_marginLeft="-55dp"
+           android:layout_marginStart="-55dp"
            android:adjustViewBounds="true"
            android:contentDescription="@string/card_hint"
            tools:src="@drawable/queen_of_hearts"/>

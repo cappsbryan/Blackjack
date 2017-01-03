@@ -1,11 +1,15 @@
-package com.bryancapps.blackjack.Models;
+package com.bryancapps.blackjack.models;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
+import com.google.common.collect.ImmutableList;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import io.reactivex.Observable;
+import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.Subject;
 
 /**
  * Representation of a hand of playing cards
@@ -13,53 +17,48 @@ import java.util.List;
  * Created by bryancapps on 6/19/15.
  */
 public class Hand implements Serializable, Iterable<Card> {
-    private final ArrayList<Card> cardsInHand;
-    private final Deck deck;
-    private final List<PropertyChangeListener> listeners = new ArrayList<>();
+    private final List<Card> cards;
+    private transient final Subject<String> events;
 
-    public Hand(Deck deck) {
-        cardsInHand = new ArrayList<>();
-        this.deck = deck;
+    public Hand() {
+        cards = new ArrayList<>();
+        events = PublishSubject.create();
     }
 
-    public void add(Card.Rank rank, Card.Suit suit) {
-        add(new Card(rank, suit));
+    public Observable<String> getEvents() {
+        return events.hide();
+    }
+
+    public ImmutableList<Card> cards() {
+        return ImmutableList.copyOf(cards);
     }
 
     public void add(Card card) {
-        int index = cardsInHand.size();
-        cardsInHand.add(card);
-        notifyListeners("card " + index, null, cardsInHand.get(index));
+        cards.add(card);
+        events.onNext("card added");
     }
 
     public int size() {
-        return cardsInHand.size();
+        return cards.size();
     }
 
-    public void draw() {
-        Card card = deck.deal();
+    public void draw(Deck deck) {
+        Card card = deck.draw();
         add(card);
     }
 
-    public void drawUpToSeventeen() {
-        while (getScore(true) < 17) {
-            draw();
-        }
+    public Card removeLastCard() {
+        Card lastCard = cards.remove(cards.size() - 1);
+        events.onNext("card removed");
+        return lastCard;
     }
 
-    public int getScore(boolean countFirstCard) {
+    public int score() {
         int score = 0;
         boolean hasAce = false;
 
-        int startingIndex;
-        if (countFirstCard) {
-            startingIndex = 0;
-        } else {
-            startingIndex = 1;
-        }
-
-        for (int i = startingIndex; i < cardsInHand.size(); i++) {
-            Card card = cardsInHand.get(i);
+        for (int i = 0; i < cards().size(); i++) {
+            Card card = cards().get(i);
             if (card.value() == 1) {
                 hasAce = true;
             }
@@ -78,31 +77,16 @@ public class Hand implements Serializable, Iterable<Card> {
     }
 
     public Card get(int index) {
-        return cardsInHand.get(index);
-    }
-
-    public Card remove(int index) {
-        return cardsInHand.remove(index);
+        return cards.get(index);
     }
 
     public void clear() {
-        ArrayList<Card> oldValue = cardsInHand;
-        cardsInHand.clear();
-        notifyListeners("cards", oldValue, cardsInHand);
+        cards.clear();
+        events.onNext("cards cleared");
     }
 
     @Override
     public Iterator<Card> iterator() {
-        return cardsInHand.iterator();
-    }
-
-    private void notifyListeners(String propertyName, Object oldValue, Object newValue) {
-        for (PropertyChangeListener name : listeners) {
-            name.propertyChange(new PropertyChangeEvent(this, propertyName, oldValue, newValue));
-        }
-    }
-
-    public void addChangeListener(PropertyChangeListener newListener) {
-        listeners.add(newListener);
+        return cards.iterator();
     }
 }
